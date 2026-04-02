@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>My Site</title>
+
+<style>
+body {
+margin: 0;
+background: black;
+}
+
+.desktop {
+display: block;
+width: 100%;
+}
+
+.mobile {
+display: none;
+width: 100%;
+}
+
+@media (max-width: 768px) {
+.desktop {
+display: none;
+}
+.mobile {
+display: block;
+}
+}
+</style>
+</head>
+
+<body>
+<img src="desktop.jpg" class="desktop">
+<img src="mobile.jpg" class="mobile">
+</body>
+</html>
