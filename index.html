@@ -1,61 +1,51 @@
+<!-- Sivre mes notes pour comprendre :) -->
+
 <!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>My Site</title>
+<title>ostande</title>
+<!-- indique que ya du html + ya des caractères français + contrôle l'affichage plein écran sur tous les appareil
+à 100% + ostande c'est le nom de la page qui s'affiche sur l'onglet -->
 
 <style>
-body {
-margin: 0;
-}
 
-.desktop {
-display: block;
-width: 100%;
-}
+/* On switch en CSS */
+  
+body {margin: 0;}
+/* supprime la marge pour que l'image occupe tout l'espace */
 
-.mobile {
-display: none;
-width: 100%;
-}
+.container {position: relative;}
+/* défini un conteneur (utile pour après) */
 
-@media (max-width: 768px) {
-.desktop {
-display: none;
-}
-.mobile {
-display: block;
-}
-}
-
-.container {
-position: relative;
-}
-
-.overlay {
-position: absolute;
+.overlay {position: absolute;
 top: 0;
 left: 0;
 width: 100%;
 height: 100%;
-z-index: 2;
-}
+z-index: 2;}
+/* crée une couche sur tout le conteneur */
+
+/* on reviens en html */
+  
 </style>
 </head>
 
 <body oncontextmenu="return false;">
+<!-- stop le clique droit -->
 
-<!-- Desktop -->
 <div class="container">
-<img src="clementine.jpg" class="desktop" draggable="false">
-<div class="overlay"></div>
-</div>
+    
+    <picture>
+      <source media="(max-width: 768px)" srcset="banana.jpg">
+      <img src="clementine.jpg" style="width:100%; display:block;" draggable="false">
+    </picture>
 
-<!-- Mobile -->
-<div class="container">
-<img src="banana.jpg" class="mobile" draggable="false">
-<div class="overlay"></div>
-</div>
+    <div class="overlay"></div>
+
+  </div>
+<!-- si l'écran est en dessous de 768px (téléphone), le site charge la version mobile,
+sinon elle charge l'autre -->
 
 </body>
 </html>
