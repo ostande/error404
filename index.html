@@ -18,16 +18,27 @@ body {margin: 0;}
 .container {position: relative;}
 /* défini un conteneur (utile pour après) */
 
-.overlay {position: absolute;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-z-index: 2;}
-/* crée une couche sur tout le conteneur */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  /* index = position avant/arrière */
+}
+/* crée la condition pour une couche de protection */
 
-/* on reviens en html */
-  
+.zone {
+  position: absolute;
+  z-index: 5;
+  /* donc les boutons passent par dessus le overlay */
+  background: red;
+  opacity: 0.3;
+}
+/* crée le cadre pour les boutons cliquables et leur zones colorées temporaire (supp -> opacity: 0) */
+
+/* on quitte le CSS*/ 
 </style>
 </head>
 
@@ -46,22 +57,11 @@ z-index: 2;}
     <div class="overlay"></div>
     <!-- crée une couche par dessus l'image pour la protéger -->
 
-   <a href="https://google.com" target="_blank" rel="noopener noreferrer" style="
-    position:absolute;
-    top:150%;
-    left:40%;
-    width:30%;
-    height:15%;
-    z-index:5;
-    background:red;
-    opacity:0.3;
-  "></a>
-  <!-- ajouter une zone cliquable sur version desktop - les % en rouge sont la position et la taille 
-  + les 2 dernières lignes (background et opacity) permette de voir la zone temporairement (à enlever) 
-  !!A FAIRE!! : améliorer le process du bouton comme a dit GBT (bien quand j'en aurai plusieurs) -->
+  <a href="page1.html" class="zone" style="top:20%; left:20%; width:20%; height:10%;"></a>
+  <a href="page2.html" class="zone" style="top:40%; left:30%; width:20%; height:10%;"></a>
+  <!-- ajouter une zone cliquable sur version desktop - les % en rouge sont la position et la taille -->
 
   </div>
 
-  
 </body>
 </html>
