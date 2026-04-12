@@ -40,19 +40,13 @@ z-index: 2;}
       <source media="(max-width: 768px)" srcset="banana.jpg">
       <img src="clementine.jpg" style="width:100%; display:block;" draggable="false">
     </picture>
+    <!-- si l'écran est en dessous de 768px (téléphone), le site charge la version mobile,
+    sinon elle charge l'autre -->
 
     <div class="overlay"></div>
+    <!-- crée une couche par dessus l'image pour la protéger -->
 
-  </div>
-<!-- si l'écran est en dessous de 768px (téléphone), le site charge la version mobile,
-sinon elle charge l'autre -->
-
-<div style="position:relative; width:100%;">
-
-  <img src="desktop.jpg" style="width:100%; display:block;">
-
-  <!-- Zone cliquable TEST -->
-  <a href="https://google.com" style="
+   <a href="https://google.com" style="
     position:absolute;
     top:22%;
     left:25%;
@@ -62,8 +56,11 @@ sinon elle charge l'autre -->
     background:red;
     opacity:0.3;
   "></a>
+  <!-- ajouter une zone cliquable sur version desktop - les % en rouge sont la position et la taille 
+  + les 2 dernières lignes (background et opacity) permette de voir la zone temporairement (à enlever) -->
 
-</div>
+  </div>
+
   
 </body>
 </html>
