@@ -56,7 +56,7 @@ const ship = { x: W/2, y: H - 160, r: 28, speed: 0.35 };
 
 // --- Image loading ---
 const meteorImg = new Image();
-meteorImg.src = 'meteor.png'; // <-- change path if needed
+meteorImg.src = 'meteor.gif'; // <-- change path if needed
 let meteorReady = false;
 meteorImg.onload = ()=> meteorReady = true;
 meteorImg.onerror = ()=> { meteorReady = false; console.warn('meteor image failed to load — fallback circle will be used.'); };
