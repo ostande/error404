@@ -1,235 +1,373 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<title>Meteor Escape</title>
+
+<style>
+    *{
+        margin:0;
+        padding:0;
+        box-sizing:border-box;
+        touch-action:none;
+        user-select:none;
+    }
+
+    body{
+        overflow:hidden;
+        background:black;
+        font-family:Arial, sans-serif;
+    }
+
+    canvas{
+        display:block;
+        background:
+            radial-gradient(circle at center, #111 0%, #000 100%);
+    }
+
+    #ui{
+        position:absolute;
+        top:0;
+        left:0;
+        width:100%;
+        padding:15px;
+        color:white;
+        z-index:10;
+        display:flex;
+        justify-content:space-between;
+        font-size:20px;
+        font-weight:bold;
+        text-shadow:0 0 10px #00ffff;
+    }
+
+    #startScreen,
+    #levelMessage,
+    #finalMessage{
+        position:absolute;
+        inset:0;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        background:rgba(0,0,0,0.85);
+        color:white;
+        z-index:20;
+        text-align:center;
+        padding:20px;
+    }
+
+    button{
+        margin-top:20px;
+        padding:15px 30px;
+        font-size:20px;
+        border:none;
+        border-radius:12px;
+        background:#00ffff;
+        color:black;
+        font-weight:bold;
+    }
+
+    h1{
+        font-size:42px;
+        margin-bottom:20px;
+        text-shadow:0 0 15px cyan;
+    }
+
+    #levelMessage,
+    #finalMessage{
+        display:none;
+    }
+
+    .pulse{
+        animation:pulse 1s infinite;
+    }
+
+    @keyframes pulse{
+        0%{transform:scale(1);}
+        50%{transform:scale(1.08);}
+        100%{transform:scale(1);}
+    }
+</style>
+</head>
+<body>
+
+<div id="ui">
+    <div>Niveau : <span id="level">1</span></div>
+    <div>Score : <span id="score">0</span></div>
+</div>
+
+<div id="startScreen">
+    <h1>METEOR ESCAPE</h1>
+    <p>Évite les météores le plus longtemps possible.</p>
+    <button id="startBtn">JOUER</button>
+</div>
+
+<div id="levelMessage">
+    <h1 class="pulse">NIVEAU SUIVANT</h1>
+</div>
+
+<div id="finalMessage">
+    <h1>MESSAGE SECRET</h1>
+    <p>
+        REMPLACE CE TEXTE PAR TON MESSAGE AU NIVEAU 10
+    </p>
+</div>
+
+<canvas id="game"></canvas>
+
 <script>
-/* (Placez ceci à la place du script incomplet) */
-const canvas = document.getElementById('game');
-const ctx = canvas.getContext('2d', { alpha: false });
-const scoreEl = document.getElementById('score');
-const livesEl = document.getElementById('lives');
-const startBtn = document.getElementById('start');
-const pauseBtn = document.getElementById('pause');
-const resetBtn = document.getElementById('reset');
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
 
-let W = 720, H = 1280;
-let running = false, paused = false;
-let score = 0, lives = 3;
-let lastSpawn = 0, spawnInterval = 900;
-let objs = [], bullets = [];
-let lastShot = 0, shotCooldown = 220;
-let touchId = null, touchX = null;
-const ship = { x: W/2, y: H - 160, r: 28, speed: 0.35 };
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
 
-// image
+window.addEventListener("resize", () => {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+});
+
 const meteorImg = new Image();
-meteorImg.src = 'meteor.gif';
-let meteorReady = false;
-meteorImg.onload = () => meteorReady = true;
-meteorImg.onerror = () => { meteorReady = false; console.warn('meteor image failed to load — fallback will be used.'); };
+meteorImg.src = "meteor.gif";
 
-function resizeForDisplay(){
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
-  canvas.style.height = Math.min(window.innerHeight - 140, 900) + 'px';
-  canvas.width = W * dpr;
-  canvas.height = H * dpr;
-  ctx.setTransform(dpr,0,0,dpr,0,0);
-}
-resizeForDisplay();
-window.addEventListener('resize', resizeForDisplay);
+const player = {
+    x: w / 2,
+    y: h - 120,
+    size: 35,
+    speed: 0.2
+};
 
-function spawnMeteor(){
-  const size = 24 + Math.random()*46;
-  const x = Math.random()*(W - size) + size/2;
-  const speed = 0.9 + Math.random()*1.8 + score*0.002;
-  const rot = (Math.random()-0.5)*0.04;
-  objs.push({ x, y: -size, r: size/2, size, speed, rot, ang: Math.random()*Math.PI*2, hits: 0 });
-}
+let meteors = [];
+let score = 0;
+let level = 1;
+let gameRunning = false;
+let spawnRate = 1200;
+let meteorSpeed = 3;
 
-function update(dt){
-  if(paused) return;
-  lastSpawn += dt;
-  if(lastSpawn > spawnInterval){
-    lastSpawn = 0;
-    spawnMeteor();
-    if(Math.random() < 0.06) spawnInterval = Math.max(420, spawnInterval * 0.96);
-  }
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
 
-  if(touchX !== null){
-    const dx = touchX - ship.x;
-    ship.x += dx * Math.min(1, ship.speed * dt * 0.06);
-    ship.x = Math.max(ship.r, Math.min(W - ship.r, ship.x));
-  }
-
-  for(let i = objs.length-1; i>=0; i--){
-    const o = objs[i];
-    o.y += o.speed * dt * 0.06;
-    o.ang += o.rot * dt * 0.06;
-    const dx = o.x - ship.x, dy = o.y - ship.y;
-    if(Math.hypot(dx,dy) < o.r + ship.r - 6){
-      objs.splice(i,1);
-      lives -= 1;
-      continue;
+function vibrate(ms){
+    if(navigator.vibrate){
+        navigator.vibrate(ms);
     }
-    if(o.y - o.r > H + 40) objs.splice(i,1);
-  }
+}
 
-  for(let i = bullets.length-1; i>=0; i--){
-    const b = bullets[i];
-    b.y -= b.speed * dt * 0.06;
-    if(b.y < -20){ bullets.splice(i,1); continue; }
-    for(let j = objs.length-1; j>=0; j--){
-      const o = objs[j];
-      const dx = o.x - b.x, dy = o.y - b.y;
-      if(Math.hypot(dx,dy) < o.r + 4){
-        bullets.splice(i,1);
-        o.hits++;
-        const destroyed = o.r < 32 || o.hits > 1;
-        if(destroyed){
-          score += Math.round(10 + o.r);
-          objs.splice(j,1);
+function playBeep(freq, duration){
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.frequency.value = freq;
+    osc.type = "square";
+
+    osc.start();
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        audioCtx.currentTime + duration / 1000
+    );
+
+    osc.stop(audioCtx.currentTime + duration / 1000);
+}
+
+function createMeteor(){
+    const size = Math.random() * 50 + 40;
+
+    meteors.push({
+        x: Math.random() * (w - size),
+        y: -size,
+        size,
+        speed: meteorSpeed + Math.random() * 2,
+        rotation: Math.random() * Math.PI
+    });
+}
+
+function updateLevel(){
+    const newLevel = Math.min(10, Math.floor(score / 15) + 1);
+
+    if(newLevel !== level){
+        level = newLevel;
+        levelEl.innerText = level;
+
+        spawnRate = Math.max(250, spawnRate - 80);
+        meteorSpeed += 0.5;
+
+        showLevelMessage();
+
+        playBeep(500, 200);
+        vibrate(120);
+
+        if(level === 10){
+            endGameFinal();
         }
-        break;
-      }
     }
-  }
-
-  lastShot += dt;
-  if(touchX !== null && lastShot > shotCooldown){
-    lastShot = 0;
-    fireBullet();
-  }
-
-  scoreEl.textContent = score;
-  livesEl.textContent = lives;
-  if(lives <= 0){ running = false; paused = true; showGameOver(); }
 }
 
-function fireBullet(){
-  bullets.push({ x: ship.x, y: ship.y - ship.r - 6, r:4, speed: 10 + Math.random()*2 });
+function showLevelMessage(){
+    const el = document.getElementById("levelMessage");
+
+    el.style.display = "flex";
+
+    setTimeout(() => {
+        el.style.display = "none";
+    }, 1200);
 }
 
-function drawShip(x,y,r){
-  ctx.save();
-  ctx.translate(x,y);
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--ship') || '#7ee787';
-  ctx.beginPath();
-  ctx.moveTo(0,-r);
-  ctx.lineTo(r*0.6, r*0.9);
-  ctx.lineTo(-r*0.6, r*0.9);
-  ctx.closePath();
-  ctx.fill();
-  ctx.fillStyle = '#052';
-  ctx.beginPath();
-  ctx.ellipse(0, -r*0.12, r*0.28, r*0.18, 0, 0, Math.PI*2);
-  ctx.fill();
-  ctx.restore();
+function endGame(){
+    gameRunning = false;
+
+    playBeep(120, 700);
+    vibrate([100, 50, 100, 50, 300]);
+
+    setTimeout(() => {
+        alert("Game Over\nScore : " + score);
+        location.reload();
+    }, 300);
 }
 
-function draw(){
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0,0,W,H);
+function endGameFinal(){
+    gameRunning = false;
 
-  ctx.fillStyle = '#071a26';
-  for(let i=0;i<60;i++){
-    const sx = (i*97)%W, sy = ((i*53)+Math.floor(score/50*7))%H;
-    ctx.fillRect(sx, sy, 1,1);
-  }
+    playBeep(900, 1200);
+    vibrate([200,100,200,100,500]);
 
-  for(const o of objs){
-    ctx.save();
-    ctx.translate(o.x,o.y);
-    ctx.rotate(o.ang);
-    if(meteorReady){
-      const dw = o.size, dh = o.size;
-      ctx.drawImage(meteorImg, -dw/2, -dh/2, dw, dh);
-    } else {
-      const grad = ctx.createLinearGradient(-o.r,-o.r,o.r,o.r);
-      grad.addColorStop(0,'#fff2d8');
-      grad.addColorStop(0.5,'#ffb77a');
-      grad.addColorStop(1,'#ff9b71');
-      ctx.fillStyle = grad;
-      ctx.beginPath();
-      ctx.arc(0,0,o.r,0,Math.PI*2);
-      ctx.fill();
-    }
-    ctx.restore();
-  }
+    document.getElementById("finalMessage").style.display = "flex";
+}
 
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bullet') || '#b8fff2';
-  for(const b of bullets){
+function collision(a, b){
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < a.size/2 + b.size/2;
+}
+
+function drawPlayer(){
     ctx.beginPath();
-    ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+    ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+    ctx.fillStyle = "#00ffff";
+    ctx.shadowBlur = 20;
+    ctx.shadowColor = "#00ffff";
     ctx.fill();
-  }
-
-  drawShip(ship.x, ship.y, ship.r);
-
-  ctx.fillStyle = 'rgba(255,255,255,0.85)';
-  ctx.font = '18px system-ui, -apple-system, Arial';
-  ctx.textAlign = 'left';
-  ctx.fillText('Score: ' + score, 12, 28);
-  ctx.textAlign = 'right';
-  ctx.fillText('Lives: ' + lives, W - 12, 28);
 }
 
-function showGameOver(){
-  ctx.fillStyle = 'rgba(0,0,0,0.6)';
-  ctx.fillRect(0,0,W,H);
-  ctx.fillStyle = '#fff';
-  ctx.textAlign = 'center';
-  ctx.font = '40px system-ui, -apple-system, Arial';
-  ctx.fillText('Game Over', W/2, H/2 - 10);
-  ctx.font = '18px system-ui, -apple-system, Arial';
-  ctx.fillText('Appuyez sur Démarrer pour rejouer', W/2, H/2 + 26);
+function drawMeteors(){
+    meteors.forEach(m => {
+
+        ctx.save();
+
+        ctx.translate(m.x + m.size/2, m.y + m.size/2);
+        ctx.rotate(m.rotation);
+
+        ctx.drawImage(
+            meteorImg,
+            -m.size/2,
+            -m.size/2,
+            m.size,
+            m.size
+        );
+
+        ctx.restore();
+
+        m.y += m.speed;
+        m.rotation += 0.02;
+
+        if(m.y > h + 100){
+            score++;
+            scoreEl.innerText = score;
+        }
+    });
+
+    meteors = meteors.filter(m => m.y < h + 100);
 }
 
-let lastTime = 0;
-function loop(ts){
-  if(!running){ if(paused) return; }
-  const dt = ts - lastTime || 16;
-  lastTime = ts;
-  update(dt);
-  draw();
-  if(running || !paused) requestAnimationFrame(loop);
+function gameLoop(){
+    if(!gameRunning) return;
+
+    ctx.clearRect(0,0,w,h);
+
+    drawPlayer();
+    drawMeteors();
+
+    meteors.forEach(m => {
+        if(collision(
+            {
+                x:player.x,
+                y:player.y,
+                size:player.size*2
+            },
+            {
+                x:m.x + m.size/2,
+                y:m.y + m.size/2,
+                size:m.size
+            }
+        )){
+            endGame();
+        }
+    });
+
+    updateLevel();
+
+    requestAnimationFrame(gameLoop);
 }
 
-function getCanvasPos(clientX){
-  const rect = canvas.getBoundingClientRect();
-  const scaleX = W / rect.width;
-  return (clientX - rect.left) * scaleX;
+let spawnInterval;
+
+function startGame(){
+
+    document.getElementById("startScreen").style.display = "none";
+
+    gameRunning = true;
+
+    spawnInterval = setInterval(() => {
+        createMeteor();
+    }, spawnRate);
+
+    setInterval(() => {
+        clearInterval(spawnInterval);
+
+        spawnInterval = setInterval(() => {
+            createMeteor();
+        }, spawnRate);
+
+    }, 3000);
+
+    gameLoop();
 }
 
-/* pointer events */
-canvas.addEventListener('pointerdown', (e)=>{
-  e.preventDefault();
-  canvas.setPointerCapture(e.pointerId);
-  touchId = e.pointerId;
-  touchX = getCanvasPos(e.clientX);
-  lastShot = shotCooldown + 1;
-});
-canvas.addEventListener('pointermove', (e)=>{
-  if(e.pointerId !== touchId) return;
-  touchX = getCanvasPos(e.clientX);
-});
-canvas.addEventListener('pointerup', (e)=>{
-  if(e.pointerId !== touchId) return;
-  canvas.releasePointerCapture(e.pointerId);
-  touchId = null; touchX = null;
-});
-canvas.addEventListener('pointercancel', ()=>{
-  touchId = null; touchX = null;
+canvas.addEventListener("touchmove", e => {
+    const touch = e.touches[0];
+
+    player.x += (touch.clientX - player.x) * player.speed;
+
+    if(player.x < player.size){
+        player.x = player.size;
+    }
+
+    if(player.x > w - player.size){
+        player.x = w - player.size;
+    }
 });
 
-/* click zones */
-canvas.addEventListener('click', (e)=>{
-  const x = getCanvasPos(e.clientX);
-  if(x < W*0.33) ship.x = Math.max(ship.r, ship.x - 80);
-  else if(x > W*0.66) ship.x = Math.min(W - ship.r, ship.x + 80);
-  else { lastShot = shotCooldown + 1; }
+canvas.addEventListener("mousemove", e => {
+
+    player.x += (e.clientX - player.x) * player.speed;
+
 });
 
-/* buttons */
-startBtn.addEventListener('click', ()=>{ if(running) return; if(lives<=0){ score=0; lives=3; objs=[]; bullets=[]; spawnInterval=900;} running=true; paused=false; lastTime=performance.now(); requestAnimationFrame(loop); });
-pauseBtn.addEventListener('click', ()=>{ paused = !paused; if(!paused && running){ lastTime = performance.now(); requestAnimationFrame(loop); } });
-resetBtn.addEventListener('click', ()=>{ running=false; paused=true; score=0; lives=3; objs=[]; bullets=[]; spawnInterval=900; scoreEl.textContent=score; livesEl.textContent=lives; ctx.clearRect(0,0,W,H); draw(); });
+document.getElementById("startBtn").addEventListener("click", () => {
 
-/* initial draw */
-draw();
+    playBeep(700, 150);
+
+    startGame();
+});
 </script>
+
+</body>
+</html>
