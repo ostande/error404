@@ -1,42 +1,5 @@
-<!doctype html>
-<html lang="fr">
-<head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Space Swipe — Avec images</title>
-<style>
-  :root{--bg:#040712;--ship:#7ee787;--bullet:#b8fff2;--ui:#e6eef6}
-  html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#00111a,#040712);color:var(--ui);-webkit-tap-highlight-color:transparent}
-  #wrap{max-width:720px;margin:0 auto;padding:12px}
-  header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
-  h1{font-size:1rem;margin:0}
-  .hud{font-size:0.95rem}
-  canvas{width:100%;height:auto;border-radius:12px;background:linear-gradient(#001322,#00111a);touch-action:none;display:block}
-  .controls{display:flex;gap:8px;justify-content:center;margin-top:8px}
-  button{background:rgba(255,255,255,0.04);color:var(--ui);border:0;padding:8px 12px;border-radius:8px;font-size:14px}
-  .small{font-size:13px;padding:6px 10px}
-</style>
-</head>
-<body>
-<div id="wrap">
-  <header>
-    <h1>Space Swipe</h1>
-    <div class="hud">Score: <span id="score">0</span> — Vies: <span id="lives">3</span></div>
-  </header>
-
-  <canvas id="game" width="720" height="1280" aria-label="Jeu Space Swipe"></canvas>
-
-  <div class="controls">
-    <button id="start" class="small">Démarrer</button>
-    <button id="pause" class="small">Pause</button>
-    <button id="reset" class="small">Réinitialiser</button>
-  </div>
-</div>
-
 <script>
-/* Mobile-first shooter: meteors are rendered with an image.
-   Put your image file (meteor.png) next to this HTML or change path.
-*/
+/* (Placez ceci à la place du script incomplet) */
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
 const scoreEl = document.getElementById('score');
@@ -45,7 +8,7 @@ const startBtn = document.getElementById('start');
 const pauseBtn = document.getElementById('pause');
 const resetBtn = document.getElementById('reset');
 
-let W = canvas.width, H = canvas.height;
+let W = 720, H = 1280;
 let running = false, paused = false;
 let score = 0, lives = 3;
 let lastSpawn = 0, spawnInterval = 900;
@@ -54,14 +17,13 @@ let lastShot = 0, shotCooldown = 220;
 let touchId = null, touchX = null;
 const ship = { x: W/2, y: H - 160, r: 28, speed: 0.35 };
 
-// --- Image loading ---
+// image
 const meteorImg = new Image();
-meteorImg.src = 'meteor.gif'; // <-- change path if needed
+meteorImg.src = 'meteor.gif';
 let meteorReady = false;
-meteorImg.onload = ()=> meteorReady = true;
-meteorImg.onerror = ()=> { meteorReady = false; console.warn('meteor image failed to load — fallback circle will be used.'); };
+meteorImg.onload = () => meteorReady = true;
+meteorImg.onerror = () => { meteorReady = false; console.warn('meteor image failed to load — fallback will be used.'); };
 
-// resize for display (DPR)
 function resizeForDisplay(){
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.style.height = Math.min(window.innerHeight - 140, 900) + 'px';
@@ -170,17 +132,14 @@ function draw(){
     ctx.fillRect(sx, sy, 1,1);
   }
 
-  // meteors: use image if ready, otherwise fallback to circle
   for(const o of objs){
     ctx.save();
     ctx.translate(o.x,o.y);
     ctx.rotate(o.ang);
     if(meteorReady){
-      // draw image centered, scale to object's size
       const dw = o.size, dh = o.size;
       ctx.drawImage(meteorImg, -dw/2, -dh/2, dw, dh);
     } else {
-      // fallback: textured circle
       const grad = ctx.createLinearGradient(-o.r,-o.r,o.r,o.r);
       grad.addColorStop(0,'#fff2d8');
       grad.addColorStop(0.5,'#ffb77a');
@@ -237,4 +196,40 @@ function getCanvasPos(clientX){
   return (clientX - rect.left) * scaleX;
 }
 
-canvas.addEventSorry — message cut off. Continued and complete code below.
+/* pointer events */
+canvas.addEventListener('pointerdown', (e)=>{
+  e.preventDefault();
+  canvas.setPointerCapture(e.pointerId);
+  touchId = e.pointerId;
+  touchX = getCanvasPos(e.clientX);
+  lastShot = shotCooldown + 1;
+});
+canvas.addEventListener('pointermove', (e)=>{
+  if(e.pointerId !== touchId) return;
+  touchX = getCanvasPos(e.clientX);
+});
+canvas.addEventListener('pointerup', (e)=>{
+  if(e.pointerId !== touchId) return;
+  canvas.releasePointerCapture(e.pointerId);
+  touchId = null; touchX = null;
+});
+canvas.addEventListener('pointercancel', ()=>{
+  touchId = null; touchX = null;
+});
+
+/* click zones */
+canvas.addEventListener('click', (e)=>{
+  const x = getCanvasPos(e.clientX);
+  if(x < W*0.33) ship.x = Math.max(ship.r, ship.x - 80);
+  else if(x > W*0.66) ship.x = Math.min(W - ship.r, ship.x + 80);
+  else { lastShot = shotCooldown + 1; }
+});
+
+/* buttons */
+startBtn.addEventListener('click', ()=>{ if(running) return; if(lives<=0){ score=0; lives=3; objs=[]; bullets=[]; spawnInterval=900;} running=true; paused=false; lastTime=performance.now(); requestAnimationFrame(loop); });
+pauseBtn.addEventListener('click', ()=>{ paused = !paused; if(!paused && running){ lastTime = performance.now(); requestAnimationFrame(loop); } });
+resetBtn.addEventListener('click', ()=>{ running=false; paused=true; score=0; lives=3; objs=[]; bullets=[]; spawnInterval=900; scoreEl.textContent=score; livesEl.textContent=lives; ctx.clearRect(0,0,W,H); draw(); });
+
+/* initial draw */
+draw();
+</script>
