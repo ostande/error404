@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-<title>Space Swipe — Jeu mobile</title>
+<title>Space Swipe — Avec images</title>
 <style>
-  :root{--bg:#040712;--ship:#7ee787;--bullet:#b8fff2;--meteor:#ff9b71;--ui:#e6eef6}
+  :root{--bg:#040712;--ship:#7ee787;--bullet:#b8fff2;--ui:#e6eef6}
   html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial;background:linear-gradient(180deg,#00111a,#040712);color:var(--ui);-webkit-tap-highlight-color:transparent}
   #wrap{max-width:720px;margin:0 auto;padding:12px}
   header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
@@ -34,8 +34,8 @@
 </div>
 
 <script>
-/* Mobile-first shooter: swipe to move ship, tap to fire.
-   Designed to scale: canvas internal resolution 720x1280 (portrait).
+/* Mobile-first shooter: meteors are rendered with an image.
+   Put your image file (meteor.png) next to this HTML or change path.
 */
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d', { alpha: false });
@@ -54,8 +54,15 @@ let lastShot = 0, shotCooldown = 220;
 let touchId = null, touchX = null;
 const ship = { x: W/2, y: H - 160, r: 28, speed: 0.35 };
 
+// --- Image loading ---
+const meteorImg = new Image();
+meteorImg.src = 'meteor.png'; // <-- change path if needed
+let meteorReady = false;
+meteorImg.onload = ()=> meteorReady = true;
+meteorImg.onerror = ()=> { meteorReady = false; console.warn('meteor image failed to load — fallback circle will be used.'); };
+
+// resize for display (DPR)
 function resizeForDisplay(){
-  // CSS already scales; set physical size for sharpness on high-DPI
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
   canvas.style.height = Math.min(window.innerHeight - 140, 900) + 'px';
   canvas.width = W * dpr;
@@ -70,7 +77,7 @@ function spawnMeteor(){
   const x = Math.random()*(W - size) + size/2;
   const speed = 0.9 + Math.random()*1.8 + score*0.002;
   const rot = (Math.random()-0.5)*0.04;
-  objs.push({ x, y: -size, r: size/2, speed, rot, ang: Math.random()*Math.PI*2, hits: 0 });
+  objs.push({ x, y: -size, r: size/2, size, speed, rot, ang: Math.random()*Math.PI*2, hits: 0 });
 }
 
 function update(dt){
@@ -82,30 +89,25 @@ function update(dt){
     if(Math.random() < 0.06) spawnInterval = Math.max(420, spawnInterval * 0.96);
   }
 
-  // ship movement toward touchX
   if(touchX !== null){
     const dx = touchX - ship.x;
     ship.x += dx * Math.min(1, ship.speed * dt * 0.06);
     ship.x = Math.max(ship.r, Math.min(W - ship.r, ship.x));
   }
 
-  // objects movement
   for(let i = objs.length-1; i>=0; i--){
     const o = objs[i];
     o.y += o.speed * dt * 0.06;
     o.ang += o.rot * dt * 0.06;
-    // collision with ship
     const dx = o.x - ship.x, dy = o.y - ship.y;
     if(Math.hypot(dx,dy) < o.r + ship.r - 6){
       objs.splice(i,1);
       lives -= 1;
       continue;
     }
-    // off screen
     if(o.y - o.r > H + 40) objs.splice(i,1);
   }
 
-  // bullets movement & collisions
   for(let i = bullets.length-1; i>=0; i--){
     const b = bullets[i];
     b.y -= b.speed * dt * 0.06;
@@ -114,22 +116,18 @@ function update(dt){
       const o = objs[j];
       const dx = o.x - b.x, dy = o.y - b.y;
       if(Math.hypot(dx,dy) < o.r + 4){
-        // hit
         bullets.splice(i,1);
         o.hits++;
-        if(o.hits > 0){ // one hit destroys smaller ones; larger require 2
-          const destroyed = o.r < 32 || o.hits > 1;
-          if(destroyed){
-            score += Math.round(10 + o.r);
-            objs.splice(j,1);
-          }
+        const destroyed = o.r < 32 || o.hits > 1;
+        if(destroyed){
+          score += Math.round(10 + o.r);
+          objs.splice(j,1);
         }
         break;
       }
     }
   }
 
-  // auto fire when touching
   lastShot += dt;
   if(touchX !== null && lastShot > shotCooldown){
     lastShot = 0;
@@ -148,7 +146,6 @@ function fireBullet(){
 function drawShip(x,y,r){
   ctx.save();
   ctx.translate(x,y);
-  // simple triangle ship
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--ship') || '#7ee787';
   ctx.beginPath();
   ctx.moveTo(0,-r);
@@ -156,7 +153,6 @@ function drawShip(x,y,r){
   ctx.lineTo(-r*0.6, r*0.9);
   ctx.closePath();
   ctx.fill();
-  // cockpit
   ctx.fillStyle = '#052';
   ctx.beginPath();
   ctx.ellipse(0, -r*0.12, r*0.28, r*0.18, 0, 0, Math.PI*2);
@@ -165,35 +161,38 @@ function drawShip(x,y,r){
 }
 
 function draw(){
-  // background
   ctx.fillStyle = 'black';
   ctx.fillRect(0,0,W,H);
 
-  // subtle stars
   ctx.fillStyle = '#071a26';
   for(let i=0;i<60;i++){
     const sx = (i*97)%W, sy = ((i*53)+Math.floor(score/50*7))%H;
     ctx.fillRect(sx, sy, 1,1);
   }
 
-  // meteors
+  // meteors: use image if ready, otherwise fallback to circle
   for(const o of objs){
     ctx.save();
     ctx.translate(o.x,o.y);
     ctx.rotate(o.ang);
-    const grad = ctx.createLinearGradient(-o.r,-o.r,o.r,o.r);
-    grad.addColorStop(0,'#fff2d8');
-    grad.addColorStop(0.5,'#ffb77a');
-    grad.addColorStop(1,'#ff9b71');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.moveTo(-o.r*0.7,-o.r*0.3);
-    ctx.arc(0,0,o.r,0,Math.PI*2);
-    ctx.fill();
+    if(meteorReady){
+      // draw image centered, scale to object's size
+      const dw = o.size, dh = o.size;
+      ctx.drawImage(meteorImg, -dw/2, -dh/2, dw, dh);
+    } else {
+      // fallback: textured circle
+      const grad = ctx.createLinearGradient(-o.r,-o.r,o.r,o.r);
+      grad.addColorStop(0,'#fff2d8');
+      grad.addColorStop(0.5,'#ffb77a');
+      grad.addColorStop(1,'#ff9b71');
+      ctx.fillStyle = grad;
+      ctx.beginPath();
+      ctx.arc(0,0,o.r,0,Math.PI*2);
+      ctx.fill();
+    }
     ctx.restore();
   }
 
-  // bullets
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bullet') || '#b8fff2';
   for(const b of bullets){
     ctx.beginPath();
@@ -201,10 +200,8 @@ function draw(){
     ctx.fill();
   }
 
-  // ship
   drawShip(ship.x, ship.y, ship.r);
 
-  // HUD small
   ctx.fillStyle = 'rgba(255,255,255,0.85)';
   ctx.font = '18px system-ui, -apple-system, Arial';
   ctx.textAlign = 'left';
@@ -214,7 +211,6 @@ function draw(){
 }
 
 function showGameOver(){
-  // dim
   ctx.fillStyle = 'rgba(0,0,0,0.6)';
   ctx.fillRect(0,0,W,H);
   ctx.fillStyle = '#fff';
@@ -235,68 +231,10 @@ function loop(ts){
   if(running || !paused) requestAnimationFrame(loop);
 }
 
-// Touch controls: swipe to move, tap to shoot; also support pointer events
 function getCanvasPos(clientX){
   const rect = canvas.getBoundingClientRect();
-  // convert to canvas coordinate (using displayed CSS size)
   const scaleX = W / rect.width;
   return (clientX - rect.left) * scaleX;
 }
 
-canvas.addEventListener('pointerdown', (e)=>{
-  e.preventDefault();
-  canvas.setPointerCapture(e.pointerId);
-  touchId = e.pointerId;
-  touchX = getCanvasPos(e.clientX);
-  // quick tap fires immediately
-  lastShot = shotCooldown + 1;
-});
-canvas.addEventListener('pointermove', (e)=>{
-  if(e.pointerId !== touchId) return;
-  touchX = getCanvasPos(e.clientX);
-});
-canvas.addEventListener('pointerup', (e)=>{
-  if(e.pointerId !== touchId) return;
-  canvas.releasePointerCapture(e.pointerId);
-  touchId = null;
-  touchX = null;
-});
-canvas.addEventListener('pointercancel', ()=>{
-  touchId = null; touchX = null;
-});
-
-// Also allow simple touch zones: tap left/right to nudge ship when not touching-dragging
-canvas.addEventListener('click', (e)=>{
-  const x = getCanvasPos(e.clientX);
-  if(x < W*0.33) ship.x = Math.max(ship.r, ship.x - 80);
-  else if(x > W*0.66) ship.x = Math.min(W - ship.r, ship.x + 80);
-  else { lastShot = shotCooldown + 1; } // center tap shoots
-});
-
-startBtn.addEventListener('click', startGame);
-pauseBtn.addEventListener('click', togglePause);
-resetBtn.addEventListener('click', resetGame);
-
-function startGame(){
-  if(running) return;
-  if(lives <= 0){ score = 0; lives = 3; objs = []; bullets = []; spawnInterval = 900; }
-  running = true; paused = false;
-  lastTime = performance.now();
-  requestAnimationFrame(loop);
-}
-
-function togglePause(){
-  paused = !paused;
-  if(!paused && running){ lastTime = performance.now(); requestAnimationFrame(loop); }
-}
-
-function resetGame(){
-  running = false; paused = true;
-  score = 0; lives = 3; objs = []; bullets = []; spawnInterval = 900;
-  scoreEl.textContent = score; livesEl.textContent = lives;
-  ctx.clearRect(0,0,W,H); draw();
-}
-
-// initial draw
-draw();
-</script>
+canvas.addEventSorry — message cut off. Continued and complete code below.
