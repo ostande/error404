@@ -42,11 +42,28 @@ canvas{
 }
 
 #startScreen,
-#levelMessage,
+#levelMessage{
+    position:absolute;
+    top:70px;
+    right:15px;
+    display:none;
+    padding:8px 14px;
+    background:rgba(0,255,255,0.15);
+    border:1px solid rgba(0,255,255,0.6);
+    border-radius:20px;
+    color:#00ffff;
+    font-size:16px;
+    font-weight:bold;
+    z-index:20;
+    backdrop-filter:blur(4px);
+    box-shadow:0 0 12px rgba(0,255,255,0.4);
+    animation:fadeLevel 1.2s ease forwards;
+}
+
 #finalMessage{
     position:absolute;
     inset:0;
-    display:flex;
+    display:none;
     flex-direction:column;
     align-items:center;
     justify-content:center;
@@ -55,6 +72,23 @@ canvas{
     z-index:20;
     text-align:center;
     padding:20px;
+}
+
+@keyframes fadeLevel{
+    0%{
+        opacity:0;
+        transform:translateY(-10px);
+    }
+    15%{
+        opacity:1;
+        transform:translateY(0);
+    }
+    80%{
+        opacity:1;
+    }
+    100%{
+        opacity:0;
+    }
 }
 
 button{
@@ -104,7 +138,7 @@ h1{
 </div>
 
 <div id="levelMessage">
-    <h1 class="pulse">NIVEAU SUIVANT</h1>
+    🚀 Niveau 2
 </div>
 
 <div id="finalMessage">
@@ -278,7 +312,13 @@ function showLevelMessage(){
 
     const el = document.getElementById("levelMessage");
 
-    el.style.display = "flex";
+    el.textContent = `🚀 Niveau ${level}`;
+
+    el.style.animation = "none";
+    void el.offsetWidth; // relance l'animation
+
+    el.style.display = "block";
+    el.style.animation = "fadeLevel 1.2s ease forwards";
 
     setTimeout(() => {
         el.style.display = "none";
