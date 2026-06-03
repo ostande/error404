@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 <title>Meteor Escape</title>
 
 <style>
@@ -10,19 +10,20 @@
     margin:0;
     padding:0;
     box-sizing:border-box;
-    user-select:none;
     touch-action:none;
+    user-select:none;
 }
 
 body{
     overflow:hidden;
-    background:#000;
-    font-family:Arial,sans-serif;
+    background:black;
+    font-family:Arial, sans-serif;
 }
 
 canvas{
     display:block;
-    background:radial-gradient(circle at center,#111 0%,#000 100%);
+    background:
+    radial-gradient(circle at center, #111 0%, #000 100%);
 }
 
 #ui{
@@ -31,92 +32,61 @@ canvas{
     left:0;
     width:100%;
     padding:15px;
+    color:white;
+    z-index:10;
     display:flex;
     justify-content:space-between;
-    color:white;
     font-size:20px;
     font-weight:bold;
-    z-index:10;
-    text-shadow:0 0 10px cyan;
+    text-shadow:0 0 10px #00ffff;
 }
 
 #startScreen,
-#gameOverScreen,
-#finalScreen{
+#levelMessage,
+#finalMessage{
     position:absolute;
     inset:0;
     display:flex;
     flex-direction:column;
-    justify-content:center;
     align-items:center;
-    text-align:center;
-    background:rgba(0,0,0,.88);
+    justify-content:center;
+    background:rgba(0,0,0,0.85);
     color:white;
     z-index:20;
+    text-align:center;
     padding:20px;
 }
 
-#gameOverScreen,
-#finalScreen{
-    display:none;
+button{
+    margin-top:20px;
+    padding:15px 30px;
+    font-size:20px;
+    border:none;
+    border-radius:12px;
+    background:#00ffff;
+    color:black;
+    font-weight:bold;
 }
 
 h1{
-    font-size:48px;
+    font-size:42px;
     margin-bottom:20px;
     text-shadow:0 0 15px cyan;
 }
 
-p{
-    font-size:20px;
-    margin-bottom:20px;
-}
-
-button{
-    padding:15px 35px;
-    font-size:20px;
-    font-weight:bold;
-    border:none;
-    border-radius:12px;
-    cursor:pointer;
-    background:cyan;
-    color:black;
-}
-
-#levelMessage{
-    position:absolute;
-    top:80px;
-    right:15px;
+#levelMessage,
+#finalMessage{
     display:none;
-    padding:10px 15px;
-    border-radius:20px;
-    background:rgba(0,255,255,.15);
-    border:1px solid rgba(0,255,255,.6);
-    color:cyan;
-    z-index:30;
-    font-weight:bold;
-    backdrop-filter:blur(4px);
 }
 
-.fade{
-    animation:fadeLevel 1.3s forwards;
+.pulse{
+    animation:pulse 1s infinite;
 }
 
-@keyframes fadeLevel{
-    0%{
-        opacity:0;
-        transform:translateY(-10px);
-    }
-    15%{
-        opacity:1;
-        transform:translateY(0);
-    }
-    80%{
-        opacity:1;
-    }
-    100%{
-        opacity:0;
-    }
+@keyframes pulse{
+    0%{transform:scale(1);}
+    50%{transform:scale(1.08);}
+    100%{transform:scale(1);}
 }
 </style>
 </head>
@@ -128,28 +98,24 @@ button{
 </div>
 
 <div id="startScreen">
-    <h1>METEOR ESCAPE</h1>
-    <p>Survis jusqu'au niveau 10.</p>
+    <h1>TITUSMETEOR ESCAPE</h1>
+    <p>Survis jusqu'au niveau 10 (surprise à la fin).</p>
     <button id="startBtn">JOUER</button>
 </div>
 
-<div id="gameOverScreen">
-    <h1>GAME OVER</h1>
-    <p id="finalScore"></p>
-    <button onclick="location.reload()">REJOUER</button>
+<div id="levelMessage">
+    <h1 class="pulse">NIVEAU SUIVANT</h1>
 </div>
 
-<div id="finalScreen">
+<div id="finalMessage">
     <h1>MESSAGE SECRET</h1>
-    <p>Ce site est actuellement en construction.<br>Merci de ta compréhension 🚀</p>
-    <button onclick="location.reload()">RECOMMENCER</button>
+    <p>
+        "8804" - un éléphant bamileke dans la rue Léopold Ollier
+    </p>
 </div>
-
-<div id="levelMessage"></div>
 
 <canvas id="game"></canvas>
 
-<!-- Ajoute ton fichier -->
 <audio id="bgMusic" loop>
     <source src="music.mp3" type="audio/mpeg">
 </audio>
@@ -161,20 +127,47 @@ const ctx = canvas.getContext("2d");
 let w = canvas.width = window.innerWidth;
 let h = canvas.height = window.innerHeight;
 
-window.addEventListener("resize",()=>{
+window.addEventListener("resize", () => {
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
 });
 
 const meteorImg = new Image();
-meteorImg.src = "meteor.gif"; // ajoute ton image
+meteorImg.src = "meteor.gif";
 
 const music = document.getElementById("bgMusic");
 music.volume = 0.4;
 
-const audioCtx = new(window.AudioContext||window.webkitAudioContext)();
+const player = {
+    x: w / 2,
+    y: h - 120,
+    size: 35,
+    speed: 0.22
+};
 
-function beep(freq,duration){
+let meteors = [];
+let particles = [];
+
+let score = 0;
+let level = 1;
+let gameRunning = false;
+
+let spawnRate = 1200;
+let meteorSpeed = 3;
+let meteorCount = 1;
+
+const scoreEl = document.getElementById("score");
+const levelEl = document.getElementById("level");
+
+function vibrate(ms){
+    if(navigator.vibrate){
+        navigator.vibrate(ms);
+    }
+}
+
+function playBeep(freq, duration){
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
 
@@ -184,293 +177,209 @@ function beep(freq,duration){
     osc.frequency.value = freq;
     osc.type = "square";
 
-    gain.gain.value = 0.08;
-
     osc.start();
 
     gain.gain.exponentialRampToValueAtTime(
         0.0001,
-        audioCtx.currentTime + duration/1000
+        audioCtx.currentTime + duration / 1000
     );
 
-    osc.stop(audioCtx.currentTime + duration/1000);
+    osc.stop(audioCtx.currentTime + duration / 1000);
 }
 
-function vibrate(ms){
-    if(navigator.vibrate){
-        navigator.vibrate(ms);
+function createMeteor(){
+
+    for(let i = 0; i < meteorCount; i++){
+
+        const size = Math.random() * 50 + 40;
+
+        meteors.push({
+            x: Math.random() * (w - size),
+            y: -size,
+            size,
+            speed: meteorSpeed + Math.random() * 4,
+            rotation: Math.random() * Math.PI,
+            drift: (Math.random() - 0.5) * 2
+        });
     }
 }
 
-const player={
-    x:w/2,
-    y:h-120,
-    size:35,
-    speed:0.25
-};
+function createExplosion(x, y){
 
-let meteors=[];
-let particles=[];
-
-let score=0;
-let level=1;
-
-let meteorSpeed=3;
-let meteorCount=1;
-let spawnRate=1200;
-
-let gameRunning=false;
-let spawnInterval=null;
-let difficultyInterval=null;
-
-const scoreEl=document.getElementById("score");
-const levelEl=document.getElementById("level");
-
-function createExplosion(x,y){
-
-    for(let i=0;i<25;i++){
+    for(let i = 0; i < 25; i++){
 
         particles.push({
             x,
             y,
-            vx:(Math.random()-0.5)*8,
-            vy:(Math.random()-0.5)*8,
-            size:Math.random()*5+2,
+            vx:(Math.random() - 0.5) * 8,
+            vy:(Math.random() - 0.5) * 8,
+            size:Math.random() * 5 + 2,
             life:60
         });
     }
 }
 
-function createMeteor(){
+function drawParticles(){
 
-    for(let i=0;i<meteorCount;i++){
+    particles.forEach(p => {
 
-        const size=Math.random()*50+40;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(0,255,255,${p.life / 60})`;
+        ctx.fill();
 
-        meteors.push({
-            x:Math.random()*(w-size),
-            y:-size,
-            size,
-            speed:meteorSpeed+Math.random()*3,
-            drift:(Math.random()-0.5)*2,
-            rotation:Math.random()*Math.PI
-        });
+        p.x += p.vx;
+        p.y += p.vy;
+
+        p.life--;
+    });
+
+    particles = particles.filter(p => p.life > 0);
+}
+
+function updateLevel(){
+
+    const newLevel = Math.min(10, Math.floor(score / 12) + 1);
+
+    if(newLevel !== level){
+
+        level = newLevel;
+        levelEl.innerText = level;
+
+        spawnRate = Math.max(180, spawnRate - 120);
+        meteorSpeed += 1;
+
+        if(level >= 4){
+            meteorCount = 2;
+        }
+
+        if(level >= 7){
+            meteorCount = 3;
+        }
+
+        if(level >= 9){
+            meteorCount = 4;
+        }
+
+        showLevelMessage();
+
+        playBeep(500, 200);
+        vibrate(120);
+
+        createExplosion(w/2, h/2);
+
+        if(level === 10){
+            endGameFinal();
+        }
     }
 }
 
-function drawStars(){
+function showLevelMessage(){
 
-    for(let i=0;i<50;i++){
+    const el = document.getElementById("levelMessage");
 
-        ctx.fillStyle="rgba(255,255,255,.15)";
+    el.style.display = "flex";
 
-        ctx.fillRect(
-            (i*97 + performance.now()*0.03)%w,
-            (i*53)%h,
-            2,
-            2
-        );
-    }
+    setTimeout(() => {
+        el.style.display = "none";
+    }, 1200);
+}
+
+function endGame(){
+
+    gameRunning = false;
+
+    createExplosion(player.x, player.y);
+
+    playBeep(120, 700);
+    vibrate([100, 50, 100, 50, 300]);
+
+    setTimeout(() => {
+        alert("Game Over\nScore : " + score);
+        location.reload();
+    }, 1000);
+}
+
+function endGameFinal(){
+
+    gameRunning = false;
+
+    playBeep(900, 1200);
+    vibrate([200,100,200,100,500]);
+
+    document.getElementById("finalMessage").style.display = "flex";
+}
+
+function collision(a, b){
+
+    const dx = a.x - b.x;
+    const dy = a.y - b.y;
+
+    const distance = Math.sqrt(dx * dx + dy * dy);
+
+    return distance < a.size/2 + b.size/2;
 }
 
 function drawPlayer(){
 
     ctx.beginPath();
-
-    ctx.arc(
-        player.x,
-        player.y,
-        player.size,
-        0,
-        Math.PI*2
-    );
-
-    ctx.fillStyle="#00ffff";
-    ctx.shadowBlur=20;
-    ctx.shadowColor="#00ffff";
+    ctx.arc(player.x, player.y, player.size, 0, Math.PI * 2);
+    ctx.fillStyle = "#00ffff";
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = "#00ffff";
     ctx.fill();
-    ctx.shadowBlur=0;
-}
-
-function drawParticles(){
-
-    particles.forEach(p=>{
-
-        ctx.beginPath();
-
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI*2
-        );
-
-        ctx.fillStyle=`rgba(0,255,255,${p.life/60})`;
-        ctx.fill();
-
-        p.x+=p.vx;
-        p.y+=p.vy;
-        p.life--;
-    });
-
-    particles=particles.filter(p=>p.life>0);
 }
 
 function drawMeteors(){
 
-    meteors.forEach(m=>{
+    meteors.forEach(m => {
 
         ctx.save();
 
-        ctx.translate(
-            m.x+m.size/2,
-            m.y+m.size/2
-        );
-
+        ctx.translate(m.x + m.size/2, m.y + m.size/2);
         ctx.rotate(m.rotation);
 
-        if(meteorImg.complete){
-
-            ctx.drawImage(
-                meteorImg,
-                -m.size/2,
-                -m.size/2,
-                m.size,
-                m.size
-            );
-
-        }else{
-
-            ctx.beginPath();
-            ctx.arc(0,0,m.size/2,0,Math.PI*2);
-            ctx.fillStyle="orange";
-            ctx.fill();
-        }
+        ctx.drawImage(
+            meteorImg,
+            -m.size/2,
+            -m.size/2,
+            m.size,
+            m.size
+        );
 
         ctx.restore();
 
-        m.y+=m.speed;
-        m.x+=m.drift;
-        m.rotation+=0.03;
+        m.y += m.speed;
+        m.x += m.drift;
 
-        if(m.x<0 || m.x>w-m.size){
-            m.drift*=-1;
+        m.rotation += 0.03;
+
+        if(m.x < 0 || m.x > w - m.size){
+            m.drift *= -1;
         }
 
-        if(m.y>h+100){
+        if(m.y > h + 100){
             score++;
-            scoreEl.textContent=score;
+            scoreEl.innerText = score;
         }
     });
 
-    meteors=meteors.filter(m=>m.y<h+100);
+    meteors = meteors.filter(m => m.y < h + 100);
 }
 
-function collision(a,b){
+function drawStars(){
 
-    const dx=a.x-b.x;
-    const dy=a.y-b.y;
+    for(let i = 0; i < 40; i++){
 
-    return Math.sqrt(dx*dx+dy*dy)
-        < a.r+b.r;
-}
+        ctx.fillStyle = "rgba(255,255,255,0.15)";
 
-function updateLevel(){
-
-    const newLevel=Math.min(
-        10,
-        Math.floor(score/12)+1
-    );
-
-    if(newLevel===level) return;
-
-    level=newLevel;
-    levelEl.textContent=level;
-
-    meteorSpeed+=1;
-    spawnRate=Math.max(250,spawnRate-120);
-
-    if(level>=4) meteorCount=2;
-    if(level>=7) meteorCount=3;
-    if(level>=9) meteorCount=4;
-
-    showLevelMessage(level);
-
-    createExplosion(w/2,h/2);
-
-    beep(600,180);
-    vibrate(100);
-
-    restartSpawner();
-
-    if(level===10){
-        winGame();
+        ctx.fillRect(
+            (i * 97 + performance.now() * 0.03) % w,
+            (i * 53) % h,
+            2,
+            2
+        );
     }
-}
-
-function showLevelMessage(level){
-
-    const msg=document.getElementById("levelMessage");
-
-    msg.textContent=`🚀 Niveau ${level}`;
-
-    msg.classList.remove("fade");
-    void msg.offsetWidth;
-
-    msg.style.display="block";
-    msg.classList.add("fade");
-
-    setTimeout(()=>{
-        msg.style.display="none";
-    },1300);
-}
-
-function restartSpawner(){
-
-    clearInterval(spawnInterval);
-
-    spawnInterval=setInterval(()=>{
-        createMeteor();
-    },spawnRate);
-}
-
-function gameOver(){
-
-    if(!gameRunning) return;
-
-    gameRunning=false;
-
-    clearInterval(spawnInterval);
-    clearInterval(difficultyInterval);
-
-    createExplosion(player.x,player.y);
-
-    beep(150,700);
-
-    document.getElementById(
-        "finalScore"
-    ).textContent=`Score : ${score}`;
-
-    setTimeout(()=>{
-        document.getElementById(
-            "gameOverScreen"
-        ).style.display="flex";
-    },600);
-}
-
-function winGame(){
-
-    gameRunning=false;
-
-    clearInterval(spawnInterval);
-    clearInterval(difficultyInterval);
-
-    beep(1000,1000);
-
-    document.getElementById(
-        "finalScreen"
-    ).style.display="flex";
 }
 
 function gameLoop(){
@@ -484,21 +393,21 @@ function gameLoop(){
     drawPlayer();
     drawMeteors();
 
-    meteors.forEach(m=>{
+    meteors.forEach(m => {
 
         if(collision(
             {
                 x:player.x,
                 y:player.y,
-                r:player.size
+                size:player.size*2
             },
             {
-                x:m.x+m.size/2,
-                y:m.y+m.size/2,
-                r:m.size/2
+                x:m.x + m.size/2,
+                y:m.y + m.size/2,
+                size:m.size
             }
         )){
-            gameOver();
+            endGame();
         }
     });
 
@@ -507,64 +416,56 @@ function gameLoop(){
     requestAnimationFrame(gameLoop);
 }
 
+let spawnInterval;
+
 function startGame(){
 
-    if(gameRunning) return;
+    document.getElementById("startScreen").style.display = "none";
 
-    gameRunning=true;
+    gameRunning = true;
 
-    document.getElementById(
-        "startScreen"
-    ).style.display="none";
+    music.play();
 
-    music.play().catch(()=>{});
+    spawnInterval = setInterval(() => {
+        createMeteor();
+    }, spawnRate);
 
-    restartSpawner();
+    setInterval(() => {
 
-    difficultyInterval=setInterval(()=>{
-        restartSpawner();
-    },3000);
+        clearInterval(spawnInterval);
+
+        spawnInterval = setInterval(() => {
+            createMeteor();
+        }, spawnRate);
+
+    }, 3000);
 
     gameLoop();
 }
 
-canvas.addEventListener("mousemove",(e)=>{
+canvas.addEventListener("touchmove", e => {
 
-    player.x +=
-        (e.clientX-player.x)
-        *player.speed;
+    const touch = e.touches[0];
 
-    if(player.x<player.size)
-        player.x=player.size;
+    player.x += (touch.clientX - player.x) * player.speed;
 
-    if(player.x>w-player.size)
-        player.x=w-player.size;
-});
-
-canvas.addEventListener("touchmove",(e)=>{
-
-    const touch=e.touches[0];
-
-    player.x +=
-        (touch.clientX-player.x)
-        *player.speed;
-
-    if(player.x<player.size)
-        player.x=player.size;
-
-    if(player.x>w-player.size)
-        player.x=w-player.size;
-});
-
-document
-.getElementById("startBtn")
-.addEventListener("click",()=>{
-
-    if(audioCtx.state==="suspended"){
-        audioCtx.resume();
+    if(player.x < player.size){
+        player.x = player.size;
     }
 
-    beep(700,150);
+    if(player.x > w - player.size){
+        player.x = w - player.size;
+    }
+});
+
+canvas.addEventListener("mousemove", e => {
+
+    player.x += (e.clientX - player.x) * player.speed;
+});
+
+document.getElementById("startBtn").addEventListener("click", () => {
+
+    playBeep(700, 150);
 
     startGame();
 });
