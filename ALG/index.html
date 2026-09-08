@@ -1,325 +1,905 @@
-```html
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Panda Carbs 🐼</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Le Panda Royal</title>
 
   <style>
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #000;
+      --fg: #fff;
+      --gray: #aaa;
     }
 
     body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #f5f1e8;
-      font-family: Arial, sans-serif;
-      color: #222;
-      text-align: center;
-    }
-
-    .game {
-      width: 100%;
-      max-width: 500px;
-      padding: 25px;
-    }
-
-    h1 {
-      margin: 0 0 5px;
-      font-size: 42px;
-    }
-
-    .subtitle {
-      margin-bottom: 25px;
-      color: #666;
-    }
-
-    .panda {
-      font-size: 130px;
-      line-height: 1;
-      margin: 20px 0;
-      transition: transform 0.15s;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Courier New", Courier, monospace;
+      overflow: hidden;
       user-select: none;
     }
 
-    .panda.eat {
-      transform: scale(1.12) rotate(-3deg);
-    }
-
-    .panda.full {
-      animation: shake 0.5s infinite alternate;
-    }
-
-    @keyframes shake {
-      from {
-        transform: rotate(-4deg) scale(1.15);
-      }
-      to {
-        transform: rotate(4deg) scale(1.2);
-      }
-    }
-
-    .message {
-      min-height: 30px;
-      font-weight: bold;
-      margin-bottom: 12px;
-    }
-
-    .bar {
-      width: 100%;
-      height: 30px;
-      background: #ddd;
-      border-radius: 20px;
-      overflow: hidden;
-      margin-bottom: 15px;
-    }
-
-    .bar-fill {
-      width: 0%;
-      height: 100%;
-      background: #222;
-      transition: width 0.15s;
-    }
-
-    .score {
-      font-size: 20px;
-      margin-bottom: 20px;
-    }
-
-    button {
-      border: none;
-      border-radius: 15px;
-      padding: 18px 25px;
-      font-size: 20px;
-      font-weight: bold;
-      cursor: pointer;
-      background: #222;
-      color: white;
-      width: 100%;
-      transition: transform 0.1s;
-    }
-
-    button:hover {
-      transform: scale(1.02);
-    }
-
-    button:active {
-      transform: scale(0.97);
-    }
-
-    .game-over {
-      display: none;
-    }
-
-    .game-over h2 {
-      font-size: 30px;
-      margin-bottom: 10px;
-    }
-
-    .final-score {
-      font-size: 22px;
-      margin-bottom: 20px;
-    }
-
-    .video {
-      margin: 20px 0;
+    #game {
       position: relative;
-      width: 100%;
-      aspect-ratio: 16 / 9;
-      background: #ddd;
-      border-radius: 12px;
+      width: 100vw;
+      height: 100vh;
       overflow: hidden;
+      cursor: crosshair;
+      background:
+        radial-gradient(circle at center, #111 0%, #050505 45%, #000 100%);
     }
 
-    .video iframe {
+    /* Scanlines rétro */
+    #game::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 50;
+      background: repeating-linear-gradient(
+        to bottom,
+        transparent 0px,
+        transparent 3px,
+        rgba(255,255,255,0.035) 4px
+      );
+    }
+
+    /* HEADER */
+    #header {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      right: 20px;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      text-transform: uppercase;
+      font-weight: bold;
+      letter-spacing: 2px;
+    }
+
+    #title {
+      font-size: clamp(20px, 3vw, 38px);
+      text-shadow: 3px 3px 0 #555;
+    }
+
+    #stats {
+      text-align: right;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    #timer {
+      font-size: 24px;
+    }
+
+    #timer.warning {
+      animation: blink 0.5s infinite;
+    }
+
+    /* PANDA */
+    #panda {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: min(220px, 38vw);
+      aspect-ratio: 1;
+      z-index: 5;
+      transition: transform 0.08s;
+    }
+
+    #panda.blink {
+      animation: pandaBlink 0.14s linear;
+    }
+
+    .panda-head {
+      position: absolute;
+      width: 72%;
+      height: 68%;
+      left: 14%;
+      top: 18%;
+      background: white;
+      border-radius: 48% 48% 45% 45%;
+      border: 7px solid black;
+      box-shadow: 0 0 0 4px white;
+    }
+
+    .ear {
+      position: absolute;
+      width: 28%;
+      height: 28%;
+      background: black;
+      border-radius: 50%;
+      top: 2%;
+    }
+
+    .ear.left {
+      left: 5%;
+    }
+
+    .ear.right {
+      right: 5%;
+    }
+
+    .eye {
+      position: absolute;
+      width: 28%;
+      height: 31%;
+      background: black;
+      border-radius: 50%;
+      top: 34%;
+    }
+
+    .eye.left {
+      left: 16%;
+      transform: rotate(25deg);
+    }
+
+    .eye.right {
+      right: 16%;
+      transform: rotate(-25deg);
+    }
+
+    .eye::after {
+      content: "";
+      position: absolute;
+      width: 22%;
+      height: 22%;
+      background: white;
+      border-radius: 50%;
+      top: 22%;
+      left: 22%;
+    }
+
+    .nose {
+      position: absolute;
+      width: 12%;
+      height: 9%;
+      background: black;
+      border-radius: 50%;
+      left: 44%;
+      top: 59%;
+    }
+
+    .mouth {
+      position: absolute;
+      width: 25%;
+      height: 15%;
+      left: 37.5%;
+      top: 65%;
+      border-bottom: 5px solid black;
+      border-radius: 0 0 50% 50%;
+    }
+
+    /* PV */
+    #hpBar {
+      position: absolute;
+      width: min(300px, 65vw);
+      left: 50%;
+      top: calc(50% + min(140px, 24vw));
+      transform: translateX(-50%);
+      border: 3px solid white;
+      padding: 4px;
+      z-index: 7;
+    }
+
+    #hpFill {
+      height: 18px;
       width: 100%;
-      height: 100%;
-      border: 0;
+      background: white;
+      transition: width 0.08s;
     }
 
-    .small {
-      font-size: 13px;
-      color: #888;
-      margin-top: 15px;
+    #hpLabel {
+      text-align: center;
+      margin-top: 7px;
+      font-size: 12px;
+      letter-spacing: 2px;
+    }
+
+    /* CARBS */
+    .carb {
+      position: absolute;
+      color: white;
+      font-weight: bold;
+      font-size: clamp(14px, 2vw, 22px);
+      white-space: nowrap;
+      z-index: 8;
+      text-shadow: 2px 2px 0 black;
+      animation: carbFloat linear infinite;
+      cursor: pointer;
+      padding: 8px;
+    }
+
+    .carb:hover {
+      text-decoration: underline;
+    }
+
+    .carb:active {
+      transform: scale(1.3);
+    }
+
+    @keyframes carbFloat {
+      0% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+      25% {
+        transform: translate(35px, -50px) rotate(8deg);
+      }
+      50% {
+        transform: translate(-25px, -90px) rotate(-8deg);
+      }
+      75% {
+        transform: translate(-60px, -30px) rotate(5deg);
+      }
+      100% {
+        transform: translate(0, 0) rotate(0deg);
+      }
+    }
+
+    /* INTRO */
+    #intro {
+      position: absolute;
+      inset: 0;
+      z-index: 20;
+      background: rgba(0,0,0,0.94);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .intro-box {
+      max-width: 650px;
+    }
+
+    .intro-box h1 {
+      font-size: clamp(32px, 7vw, 72px);
+      margin-bottom: 25px;
+      letter-spacing: 5px;
+    }
+
+    .intro-box p {
+      font-size: 14px;
+      line-height: 1.9;
+      color: #ccc;
+      margin-bottom: 30px;
+    }
+
+    /* BUTTONS */
+    button,
+    .surprise {
+      display: inline-block;
+      border: 3px solid white;
+      background: black;
+      color: white;
+      padding: 14px 28px;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.15s;
+    }
+
+    button:hover,
+    .surprise:hover {
+      background: white;
+      color: black;
+    }
+
+    /* GAME OVER / WIN */
+    .screen {
+      position: absolute;
+      inset: 0;
+      z-index: 30;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,0.95);
+      text-align: center;
+      padding: 20px;
+    }
+
+    .screen.show {
+      display: flex;
+    }
+
+    .screen-content h2 {
+      font-size: clamp(38px, 8vw, 90px);
+      letter-spacing: 6px;
+      margin-bottom: 20px;
+      animation: blink 1s infinite;
+    }
+
+    .screen-content p {
+      margin-bottom: 30px;
+      color: #ccc;
+    }
+
+    /* EXPLOSION */
+    #explosion {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 20px;
+      height: 20px;
+      border: 8px solid white;
+      border-radius: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      z-index: 15;
+      pointer-events: none;
+    }
+
+    #explosion.active {
+      animation: explode 0.8s forwards;
+    }
+
+    @keyframes explode {
+      0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 1;
+      }
+      50% {
+        transform: translate(-50%, -50%) scale(12);
+        opacity: 0.8;
+      }
+      100% {
+        transform: translate(-50%, -50%) scale(30);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pandaBlink {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.05;
+      }
+    }
+
+    @keyframes blink {
+      0%, 49% {
+        opacity: 1;
+      }
+      50%, 100% {
+        opacity: 0.25;
+      }
+    }
+
+    /* petit texte */
+    #instructions {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      font-size: 11px;
+      color: #777;
+      text-transform: uppercase;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 600px) {
+      #header {
+        top: 12px;
+        left: 12px;
+        right: 12px;
+      }
+
+      #stats {
+        font-size: 11px;
+      }
+
+      #timer {
+        font-size: 18px;
+      }
+
+      #hpBar {
+        top: calc(50% + 105px);
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <main class="game">
+<div id="game">
 
-    <!-- JEU -->
-    <section id="game">
-
-      <h1>🐼 Panda Carbs</h1>
-      <div class="subtitle">Donne-lui des carbs.</div>
-
-      <div id="panda" class="panda">🐼</div>
-
-      <div id="message" class="message">
-        Le panda a faim...
-      </div>
-
-      <div class="bar">
-        <div id="barFill" class="bar-fill"></div>
-      </div>
-
-      <div class="score">
-        🍝 <span id="score">0</span> carbs
-      </div>
-
-      <button id="eatButton">
-        🍝 DONNER DES CARBS
-      </button>
-
-    </section>
-
-
-    <!-- FIN DU JEU -->
-    <section id="gameOver" class="game-over">
-
-      <div class="panda full">🐼</div>
-
-      <h2>C'EST FINI. 💀</h2>
+  <!-- INTRO -->
+  <div id="intro">
+    <div class="intro-box">
+      <h1>LE PANDA ROYAL</h1>
 
       <p>
-        Tu as donné beaucoup trop de carbs au panda.
+        UN PANDA.<br>
+        DES CARBS.<br>
+        60 SECONDES.<br><br>
+
+        CLIQUE SUR <strong>"DES CARBS"</strong><br>
+        AUSSI VITE QUE POSSIBLE.<br><br>
+
+        FAIS BAISSER SES POINTS DE VIE<br>
+        JUSQU'À CE QU'IL SOIT<br>
+        <strong>DESTROYED.</strong>
       </p>
 
-      <div class="final-score">
-        🍝 <strong><span id="finalScore">0</span> carbs</strong>
-      </div>
+      <button id="startButton">START GAME</button>
+    </div>
+  </div>
 
-      <!--
-        REMPLACE YOUTUBE_VIDEO_ID PAR L'ID DE TA VIDÉO.
+  <!-- HEADER -->
+  <div id="header">
+    <div id="title">LE PANDA ROYAL</div>
 
-        Exemple :
-        https://www.youtube.com/watch?v=dQw4w9WgXcQ
+    <div id="stats">
+      <div>TIME: <span id="timer">60</span></div>
+      <div>CARBS: <span id="score">0</span></div>
+    </div>
+  </div>
 
-        devient :
-        https://www.youtube.com/embed/dQw4w9WgXcQ
-      -->
-      <div class="video">
-        <iframe
-          src="https://www.youtube.com/watch?v=XHvtIcaD194&forced"
-          title="Vidéo de fin"
-          allowfullscreen>
-        </iframe>
-      </div>
+  <!-- PANDA -->
+  <div id="panda">
 
-      <button id="restartButton">
-        🔄 REJOUER
-      </button>
+    <div class="ear left"></div>
+    <div class="ear right"></div>
 
-      <div class="small">
-        Le panda avait été prévenu.
-      </div>
+    <div class="panda-head">
 
-    </section>
+      <div class="eye left"></div>
+      <div class="eye right"></div>
 
-  </main>
+      <div class="nose"></div>
+      <div class="mouth"></div>
 
+    </div>
+  </div>
 
-  <script>
-    let carbs = 0;
-    const maxCarbs = 100;
+  <!-- HP -->
+  <div id="hpBar">
+    <div id="hpFill"></div>
+    <div id="hpLabel">PANDA HP: <span id="hpValue">100</span></div>
+  </div>
 
-    const panda = document.getElementById("panda");
-    const barFill = document.getElementById("barFill");
-    const score = document.getElementById("score");
-    const message = document.getElementById("message");
+  <!-- EXPLOSION -->
+  <div id="explosion"></div>
 
-    const game = document.getElementById("game");
-    const gameOver = document.getElementById("gameOver");
-    const finalScore = document.getElementById("finalScore");
+  <!-- CARBS CONTAINER -->
+  <div id="carbs"></div>
 
-    const eatButton = document.getElementById("eatButton");
-    const restartButton = document.getElementById("restartButton");
+  <div id="instructions">
+    CLICK THE CARBS // FEED THE PANDA // DESTROY THE PANDA
+  </div>
 
+  <!-- GAME OVER -->
+  <div id="gameOver" class="screen">
+    <div class="screen-content">
+      <h2>GAME OVER</h2>
+      <p>LE PANDA A SURVÉCU.<br>POUR CETTE FOIS.</p>
+      <button onclick="restartGame()">TRY AGAIN</button>
+    </div>
+  </div>
 
-    function eatCarbs() {
+  <!-- WIN -->
+  <div id="winScreen" class="screen">
+    <div class="screen-content">
+      <h2>PANDA<br>DESTROYED!</h2>
 
-      if (carbs >= maxCarbs) return;
+      <p>
+        TROP DE CARBS.<br>
+        AUCUN REGRET.
+      </p>
 
-      carbs += 5;
+      <!-- CHANGE CETTE URL -->
+      <a
+        class="surprise"
+        href="https://example.com"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        SURPRISE
+      </a>
 
-      if (carbs > maxCarbs) {
-        carbs = maxCarbs;
-      }
+      <br><br>
 
-      score.textContent = carbs;
-      barFill.style.width = carbs + "%";
+      <button onclick="restartGame()">PLAY AGAIN</button>
+    </div>
+  </div>
 
-      // Petite animation
-      panda.classList.remove("eat");
-      void panda.offsetWidth;
-      panda.classList.add("eat");
+</div>
 
-      // Messages
-      if (carbs < 30) {
-        message.textContent = "Miam... encore des carbs !";
-      } else if (carbs < 60) {
-        message.textContent = "Le panda commence à être plein...";
-      } else if (carbs < 80) {
-        message.textContent = "Vraiment sûr que tu veux continuer ?";
-      } else if (carbs < 100) {
-        message.textContent = "LE PANDA N'EN PEUT PLUS 😭";
-      }
+<script>
+  /*
+   * =========================================================
+   * LE PANDA ROYAL
+   * Mini arcade game
+   * =========================================================
+   */
 
-      // Game over
-      if (carbs >= maxCarbs) {
-        setTimeout(endGame, 300);
-      }
+  let hp = 100;
+  let score = 0;
+  let timeLeft = 60;
+  let gameRunning = false;
+  let timerInterval = null;
+  let audioContext = null;
+  let musicInterval = null;
+
+  const panda = document.getElementById("panda");
+  const hpFill = document.getElementById("hpFill");
+  const hpValue = document.getElementById("hpValue");
+  const scoreDisplay = document.getElementById("score");
+  const timerDisplay = document.getElementById("timer");
+  const carbsContainer = document.getElementById("carbs");
+  const intro = document.getElementById("intro");
+  const gameOver = document.getElementById("gameOver");
+  const winScreen = document.getElementById("winScreen");
+  const explosion = document.getElementById("explosion");
+
+  /*
+   * ---------------------------------------------------------
+   * MUSIQUE ARCADE
+   * ---------------------------------------------------------
+   * Générée directement avec Web Audio API.
+   * Aucun fichier audio externe nécessaire.
+   */
+
+  function startMusic() {
+    if (audioContext) return;
+
+    audioContext = new (
+      window.AudioContext ||
+      window.webkitAudioContext
+    )();
+
+    const notes = [
+      261.63, 329.63, 392.00, 523.25,
+      392.00, 329.63, 293.66, 349.23
+    ];
+
+    let index = 0;
+
+    function playNote() {
+      if (!gameRunning) return;
+
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+
+      oscillator.type = "square";
+      oscillator.frequency.value = notes[index % notes.length];
+
+      gain.gain.setValueAtTime(
+        0.035,
+        audioContext.currentTime
+      );
+
+      gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioContext.currentTime + 0.12
+      );
+
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.12);
+
+      index++;
     }
 
+    musicInterval = setInterval(playNote, 150);
+  }
 
-    function endGame() {
+  /*
+   * ---------------------------------------------------------
+   * CARBS
+   * ---------------------------------------------------------
+   */
 
-      finalScore.textContent = carbs;
+  function createCarbs() {
 
-      game.style.display = "none";
-      gameOver.style.display = "block";
+    carbsContainer.innerHTML = "";
+
+    const count = window.innerWidth < 600 ? 9 : 14;
+
+    for (let i = 0; i < count; i++) {
+
+      const carb = document.createElement("div");
+
+      carb.className = "carb";
+      carb.textContent = "des carbs";
+
+      // On évite la zone immédiate du panda
+      let x, y;
+
+      do {
+        x = Math.random() * 88 + 4;
+        y = Math.random() * 80 + 8;
+      } while (
+        Math.abs(x - 50) < 18 &&
+        Math.abs(y - 50) < 18
+      );
+
+      carb.style.left = x + "%";
+      carb.style.top = y + "%";
+
+      carb.style.animationDuration =
+        (2.5 + Math.random() * 3) + "s";
+
+      carb.style.animationDelay =
+        (-Math.random() * 4) + "s";
+
+      carb.addEventListener("click", eatCarb);
+
+      carbsContainer.appendChild(carb);
     }
+  }
 
+  /*
+   * ---------------------------------------------------------
+   * MANGER UN CARB
+   * ---------------------------------------------------------
+   */
 
-    function restartGame() {
+  function eatCarb(event) {
 
-      carbs = 0;
+    if (!gameRunning) return;
 
-      score.textContent = "0";
-      barFill.style.width = "0%";
-      message.textContent = "Le panda a faim...";
+    event.stopPropagation();
 
-      gameOver.style.display = "none";
-      game.style.display = "block";
+    hp -= 5;
+    score++;
 
-      panda.classList.remove("eat");
+    if (hp < 0) hp = 0;
+
+    updateUI();
+
+    // petit effet de clignotement
+    panda.classList.remove("blink");
+    void panda.offsetWidth;
+    panda.classList.add("blink");
+
+    // léger mouvement
+    panda.style.transform =
+      "translate(-50%, -50%) scale(" +
+      (1 + Math.random() * 0.08) +
+      ")";
+
+    setTimeout(() => {
+      panda.style.transform =
+        "translate(-50%, -50%)";
+    }, 80);
+
+    // Le carb revient ailleurs
+    moveCarb(event.currentTarget);
+
+    // Son de clic
+    playClickSound();
+
+    if (hp <= 0) {
+      winGame();
     }
+  }
 
+  function moveCarb(carb) {
 
-    eatButton.addEventListener("click", eatCarbs);
-    restartButton.addEventListener("click", restartGame);
+    let x, y;
 
+    do {
+      x = Math.random() * 88 + 4;
+      y = Math.random() * 80 + 8;
+    } while (
+      Math.abs(x - 50) < 18 &&
+      Math.abs(y - 50) < 18
+    );
 
-    // ESPACE = donner des carbs
-    document.addEventListener("keydown", function(event) {
+    carb.style.left = x + "%";
+    carb.style.top = y + "%";
+  }
 
-      if (event.code === "Space" && game.style.display !== "none") {
-        event.preventDefault();
-        eatCarbs();
+  /*
+   * ---------------------------------------------------------
+   * SON DE CLIC
+   * ---------------------------------------------------------
+   */
+
+  function playClickSound() {
+
+    if (!audioContext) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = "square";
+    oscillator.frequency.value = 100 + Math.random() * 150;
+
+    gain.gain.setValueAtTime(
+      0.08,
+      audioContext.currentTime
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+      0.001,
+      audioContext.currentTime + 0.08
+    );
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.08);
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * UI
+   * ---------------------------------------------------------
+   */
+
+  function updateUI() {
+
+    hpFill.style.width = hp + "%";
+    hpValue.textContent = hp;
+
+    scoreDisplay.textContent = score;
+    timerDisplay.textContent = timeLeft;
+
+    if (timeLeft <= 10) {
+      timerDisplay.classList.add("warning");
+    } else {
+      timerDisplay.classList.remove("warning");
+    }
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * TIMER
+   * ---------------------------------------------------------
+   */
+
+  function startTimer() {
+
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+
+      if (!gameRunning) return;
+
+      timeLeft--;
+
+      updateUI();
+
+      if (timeLeft <= 0) {
+        loseGame();
       }
+
+    }, 1000);
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * START
+   * ---------------------------------------------------------
+   */
+
+  function startGame() {
+
+    hp = 100;
+    score = 0;
+    timeLeft = 60;
+    gameRunning = true;
+
+    intro.style.display = "none";
+    gameOver.classList.remove("show");
+    winScreen.classList.remove("show");
+
+    explosion.classList.remove("active");
+
+    updateUI();
+    createCarbs();
+    startTimer();
+    startMusic();
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * VICTOIRE
+   * ---------------------------------------------------------
+   */
+
+  function winGame() {
+
+    gameRunning = false;
+    clearInterval(timerInterval);
+
+    // Explosion
+    explosion.classList.remove("active");
+    void explosion.offsetWidth;
+    explosion.classList.add("active");
+
+    // Faire disparaître le panda
+    panda.style.opacity = "0";
+
+    // Faire disparaître les carbs
+    document.querySelectorAll(".carb").forEach(carb => {
+      carb.style.opacity = "0";
+    });
+
+    setTimeout(() => {
+      winScreen.classList.add("show");
+    }, 700);
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * GAME OVER
+   * ---------------------------------------------------------
+   */
+
+  function loseGame() {
+
+    gameRunning = false;
+    clearInterval(timerInterval);
+
+    gameOver.classList.add("show");
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * RESTART
+   * ---------------------------------------------------------
+   */
+
+  function restartGame() {
+
+    panda.style.opacity = "1";
+
+    explosion.classList.remove("active");
+
+    startGame();
+  }
+
+  /*
+   * ---------------------------------------------------------
+   * START BUTTON
+   * ---------------------------------------------------------
+   */
+
+  document
+    .getElementById("startButton")
+    .addEventListener("click", () => {
+
+      startGame();
 
     });
-  </script>
+
+  /*
+   * ---------------------------------------------------------
+   * EMPÊCHER LE CLIC DE FOND
+   * ---------------------------------------------------------
+   */
+
+  document.getElementById("game").addEventListener("click", () => {
+
+    if (!gameRunning) return;
+
+    // Le clic dans le vide ne fait rien.
+  });
+
+</script>
 
 </body>
 </html>
-```
-
