@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Recette de ginger beer maison</title>
+
+  <style>
+    /* =========================================================
+       BASE
+    ========================================================= */
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: #000;
+      color: #fff;
+      font-family: Georgia, "Times New Roman", serif;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    /* =========================================================
+       FOND PARALLAX
+    ========================================================= */
+
+    .parallax {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      pointer-events: none;
+      background: #000;
+    }
+
+    .shape {
+      position: absolute;
+      border-radius: 999px;
+      will-change: transform;
+    }
+
+    /* Grandes formes blanches */
+
+    .shape.white {
+      background: #fff;
+    }
+
+    .shape.black {
+      background: #000;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .shape-1 {
+      width: 65vw;
+      height: 25vw;
+      min-height: 180px;
+      top: 5%;
+      left: -20%;
+      transform: rotate(-12deg);
+    }
+
+    .shape-2 {
+      width: 50vw;
+      height: 20vw;
+      min-height: 140px;
+      top: 28%;
+      right: -18%;
+      transform: rotate(17deg);
+    }
+
+    .shape-3 {
+      width: 70vw;
+      height: 28vw;
+      min-height: 200px;
+      top: 52%;
+      left: -30%;
+      transform: rotate(8deg);
+    }
+
+    .shape-4 {
+      width: 55vw;
+      height: 22vw;
+      min-height: 160px;
+      top: 76%;
+      right: -20%;
+      transform: rotate(-14deg);
+    }
+
+    /* Formes noires qui viennent "creuser" les formes blanches */
+
+    .shape-5 {
+      width: 40vw;
+      height: 15vw;
+      min-height: 120px;
+      top: 18%;
+      left: 35%;
+      transform: rotate(8deg);
+    }
+
+    .shape-6 {
+      width: 45vw;
+      height: 17vw;
+      min-height: 130px;
+      top: 44%;
+      right: 5%;
+      transform: rotate(-10deg);
+    }
+
+    .shape-7 {
+      width: 42vw;
+      height: 16vw;
+      min-height: 120px;
+      top: 67%;
+      left: 25%;
+      transform: rotate(12deg);
+    }
+
+    /* =========================================================
+       CONTENU
+    ========================================================= */
+
+    main {
+      position: relative;
+      z-index: 2;
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 12vh 0 8vh;
+    }
+
+    article {
+      position: relative;
+    }
+
+    /* Une petite "fenêtre" noire derrière le texte */
+
+    .content {
+      background: rgba(0, 0, 0, 0.94);
+      padding: clamp(30px, 6vw, 75px);
+      border-radius: 45px;
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,0.06),
+        0 30px 100px rgba(0,0,0,0.8);
+    }
+
+    h1 {
+      margin: 0 0 70px;
+      font-size: clamp(42px, 8vw, 88px);
+      line-height: 0.98;
+      font-weight: normal;
+      letter-spacing: -0.04em;
+    }
+
+    h2 {
+      margin-top: 80px;
+      margin-bottom: 30px;
+      font-size: clamp(27px, 4vw, 42px);
+      font-weight: normal;
+      line-height: 1.1;
+    }
+
+    p {
+      margin: 0 0 30px;
+      font-size: clamp(18px, 2vw, 22px);
+    }
+
+    .intro {
+      font-size: clamp(22px, 3vw, 30px);
+      line-height: 1.45;
+    }
+
+    .dialogue {
+      font-style: italic;
+    }
+
+    .recipe {
+      margin: 50px 0;
+      padding: 35px;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 30px;
+    }
+
+    .recipe p {
+      margin-bottom: 15px;
+    }
+
+    .recipe p:last-child {
+      margin-bottom: 0;
+    }
+
+    .small {
+      margin-top: 100px;
+      padding-top: 30px;
+      border-top: 1px solid rgba(255,255,255,0.25);
+      font-size: 14px;
+      line-height: 1.5;
+      opacity: 0.75;
+    }
+
+    .ending {
+      margin-top: 90px;
+      font-size: clamp(24px, 4vw, 36px);
+      line-height: 1.35;
+    }
+
+    /* =========================================================
+       PETITS DÉTAILS
+    ========================================================= */
+
+    ::selection {
+      background: #fff;
+      color: #000;
+    }
+
+    a {
+      color: white;
+    }
+
+    /* =========================================================
+       MOBILE
+    ========================================================= */
+
+    @media (max-width: 700px) {
+
+      main {
+        width: calc(100% - 24px);
+        padding-top: 30px;
+      }
+
+      .content {
+        padding: 28px 22px 45px;
+        border-radius: 28px;
+      }
+
+      h1 {
+        margin-bottom: 45px;
+      }
+
+      h2 {
+        margin-top: 60px;
+      }
+
+      p {
+        font-size: 18px;
+      }
+
+      .recipe {
+        padding: 25px 20px;
+        border-radius: 22px;
+      }
+
+      .shape-1,
+      .shape-2,
+      .shape-3,
+      .shape-4 {
+        width: 100vw;
+        height: 40vw;
+      }
+
+      .shape-5,
+      .shape-6,
+      .shape-7 {
+        width: 70vw;
+        height: 30vw;
+      }
+    }
+
+    /* Réduction des mouvements pour les personnes qui le demandent */
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      .shape {
+        transform: none !important;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- =======================================================
+       DÉCOR PARALLAX
+  ======================================================== -->
+
+  <div class="parallax" aria-hidden="true">
+
+    <div class="shape white shape-1" data-speed="0.10"></div>
+    <div class="shape white shape-2" data-speed="-0.16"></div>
+    <div class="shape white shape-3" data-speed="0.08"></div>
+    <div class="shape white shape-4" data-speed="-0.12"></div>
+
+    <div class="shape black shape-5" data-speed="0.22"></div>
+    <div class="shape black shape-6" data-speed="-0.20"></div>
+    <div class="shape black shape-7" data-speed="0.16"></div>
+
+  </div>
+
+
+  <!-- =======================================================
+       ARTICLE
+  ======================================================== -->
+
+  <main>
+    <article>
+
+      <div class="content">
+
+        <h1>Recette de ginger beer maison</h1>
+
+        <p class="intro">
+          La ginger beer, c’est avant tout une aventure du vivant.
+          Une invitation à la vie de revenir dans nos assiettes.
+          Et alors pour ça, soyons sympa, offrons lui le gîte et le couvert !
+        </p>
+
+        <p>
+          Pour commencer, je te propose de complètement transformer ta vision
+          de la ginger beer. Ça va bien au delà de la recette maison.
+          Là c’est carrément biblique. C’est l’histoire de deux êtres créateurs
+          qui se rencontrent et qui fusionnent, dominés par une force divine,
+          lors d’une nuit chaude d’été jamaïcain.
+        </p>
+
+        <p>
+          En protagonistes, y’a le ginger beer maker, et y’a la ginger beer,
+          prête à être faite. Et puis y’a cette magicienne de vie.
+        </p>
+
+        <p>
+          C’est une soirée d’août sans nuages, les odeurs de plantains frits
+          embaument les rues, les bruits de fête se faufilent par la fenêtre
+          ouverte et chantent dans la chambre d’hôtel.
+          Quelle chaleur torride !
+        </p>
+
+        <p>
+          Les corps sont en hâte de se rencontrer, transpirants, sensibles
+          et chargés, tendus comme une peau de tambour chauffée.
+          Le sang bouillonne à l’intérieur, et le cœur plein est prêt à pomper
+          toute cette vie qui a besoin de s’exprimer.
+        </p>
+
+        <p>
+          La ginger beer s’est enrobée dans un grand drap satin alors que
+          le ginger beer maker allume les pales en bois du ventilateur au plafond :
+        </p>
+
+        <p class="dialogue">
+          « Ta température idéale, c’est ma température idéale, chérie ».
+        </p>
+
+        <p class="dialogue">
+          Elle lui répond du tac au tac :
+          « Nos corps sont fait pour être ensemble, ils sont tous les deux
+          composés à 60% d’eau ».
+        </p>
+
+        <p class="dialogue">
+          Excité, il empoigne le combiné :
+          « Room service ? Apportez-nous du champagne, du rhum et des gateaux
+          au gingembre, la nuit va être longue ».
+        </p>
+
+
+        <h2>
+          La dedans, il y a tous les éléments pour faire une bonne ginger beer :
+        </h2>
+
+
+        <div class="recipe">
+
+          <p><strong>LE GÎTE</strong></p>
+
+          <p>
+            <strong>1.</strong>
+            Température ambiante pour que la vie
+            (aka les microorganismes rhoooo quelle vulgarité vous m’obligez
+            à le dire) fasse ce qu’elle a à faire (wink wink)
+          </p>
+
+          <p>
+            <strong>2.</strong>
+            Une majorité d’eau dans la bouteille
+            (tout cet exercice, il faut s’hydrater !)
+            avec du jus de citron c’est encore meilleur
+          </p>
+
+          <br>
+
+          <p><strong>LE COUVERT</strong></p>
+
+          <p>
+            <strong>3.</strong>
+            Le sucre pour prendre des forces et du gingembre pour durrrer
+            toute la night
+          </p>
+
+          <p>
+            <strong>4.</strong>
+            Les 60% ne sont pas anodins non plus, ils te rappellent que faire
+            tes calculs en pourcentage, c’est le must
+            (parce que ça marche avec n’importe quel volume de préparation).
+            Et alors, les 40% restant c’est quoi ?
+          </p>
+
+        </div>
+
+
+        <p>
+          C’est là que le talent du ginger beer maker arrive en scène
+          et qu’il faut se lâcher, tout en gardant la main sur la technique.
+        </p>
+
+
+        <div class="recipe">
+
+          <p>
+            <strong>Ma touche personnelle dont tu peux t’inspirer
+            pour ta première tentative :</strong>
+          </p>
+
+          <p>• 10% levain de gingembre</p>
+          <p>• 20% de sucre*</p>
+          <p>• 10% de jus de gingembre et de citron,
+            à combiner selon tes préférences</p>
+
+        </div>
+
+
+        <p>
+          <strong>5.</strong>
+          Le champagne et le rhum pour que tu te souviennes que le vilain
+          alcool est impliqué dans l’affaire.
+        </p>
+
+        <p>
+          En effet, petit rappel théorique : les levures du levain consomment
+          le sucre et produisent de l’alcool et du gaz carbonique
+          (co2 #bulles), comme nous quand on pète et qu’on fait caca.
+        </p>
+
+        <p>
+          Heureusement, le gâteau a épongé le champagne donc ça va !
+          Pour te rappeler que les bactéries du levain mangent une partie
+          de l’alcool…
+        </p>
+
+        <p>
+          Mais horreur, ils ont aussi mis du rhum sur le gâteau pour le faire
+          flamber ! Pour te rappeler que certes 20% de sucre ça fait beaucoup,
+          mais après la fermentation une partie de ce sucre est consommé
+          donc on le sent moins, comme un gâteau alcoolisé…
+        </p>
+
+        <p>
+          D’ailleurs, la ginger beer au rhum ça passe très bien.
+          Et une ginger beer qui se respecte doit être traitée comme du champagne :
+          un beau verre et tout et tout.
+        </p>
+
+
+        <p class="ending">
+          Tu l’auras compris, faire de la ginger beer c’est sensuel,
+          c’est romantique.
+        </p>
+
+        <p>
+          Il faut goûter, goûter, et re goûter tout le temps.
+        </p>
+
+        <p>
+          Il faut être un minimum propre pour être classe,
+          mais pas avoir peur d’être cru•e et vivant•e non plus.
+        </p>
+
+        <p>
+          Il faut aussi savoir travailler en rythme :
+          la musique aide et c’est bien de faire des pauses.
+        </p>
+
+        <p>
+          Quand elle est à son apogée (#beaucoup2bulles),
+          il faut parfois savoir s’arrêter pour faire durer le plaisir :
+          la mettre au frigo (le froid c’est ma technique préférée)
+          pour la déguster longtemps.
+        </p>
+
+        <p>
+          Des semaines durant !
+        </p>
+
+        <p class="ending">
+          Tchintchin
+        </p>
+
+
+        <div class="small">
+          <strong>*</strong>
+          Pour calculer les pourcentages c’est simple.
+          Par exemple, pour calculer combien de gramme de sucre je dois mettre
+          pour 1L de volume total de boisson, si je choisis 20% de sucre :
+          (1000 [volume total en ml] × 0,20).
+          Comme 1L de ginger beer ≈ 1kg, le résultat peut être considéré
+          autant comme des grammes que des millilitres selon les ingrédients !
+        </div>
+
+      </div>
+
+    </article>
+  </main>
+
+
+  <!-- =======================================================
+       JAVASCRIPT PARALLAX
+  ======================================================== -->
+
+  <script>
+    const shapes = document.querySelectorAll(".shape");
+
+    let scrollPosition = 0;
+    let ticking = false;
+
+    function updateParallax() {
+      shapes.forEach(shape => {
+
+        const speed = parseFloat(shape.dataset.speed);
+
+        /*
+          Chaque forme se déplace à une vitesse différente.
+          Certaines montent, d'autres descendent.
+        */
+
+        const movement = scrollPosition * speed;
+
+        shape.style.transform =
+          `translate3d(0, ${movement}px, 0) rotate(${getRotation(shape)}deg)`;
+      });
+
+      ticking = false;
+    }
+
+    function getRotation(shape) {
+      if (shape.classList.contains("shape-1")) return -12;
+      if (shape.classList.contains("shape-2")) return 17;
+      if (shape.classList.contains("shape-3")) return 8;
+      if (shape.classList.contains("shape-4")) return -14;
+      if (shape.classList.contains("shape-5")) return 8;
+      if (shape.classList.contains("shape-6")) return -10;
+      if (shape.classList.contains("shape-7")) return 12;
+
+      return 0;
+    }
+
+    window.addEventListener("scroll", () => {
+
+      scrollPosition = window.scrollY;
+
+      if (!ticking) {
+        window.requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+
+    }, { passive: true });
+
+    updateParallax();
+  </script>
+
+</body>
+</html>
