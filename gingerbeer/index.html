@@ -7,14 +7,16 @@
   <title>Recette de ginger beer maison</title>
 
   <style>
-    /* =========================================================
-       RESET
-    ========================================================= */
+    :root {
+      --bg: #050505;
+      --fg: #f2f2f2;
+      --muted: #8c8c8c;
+      --line: #292929;
+      --accent: #ffffff;
+    }
 
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     html {
@@ -22,1086 +24,541 @@
     }
 
     body {
-      background: #f7f7f5;
-      color: #111;
-      font-family: Georgia, "Times New Roman", serif;
-      overflow-x: hidden;
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family:
+        "Courier New",
+        Courier,
+        monospace;
+      font-size: 16px;
+      line-height: 1.7;
     }
 
-
-    /* =========================================================
-       INTRO
-    ========================================================= */
-
-    .intro {
-      height: 100vh;
-      min-height: 700px;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      position: relative;
-      overflow: hidden;
+    ::selection {
+      background: var(--fg);
+      color: var(--bg);
     }
-
-    .intro-circle {
-      width: min(72vw, 850px);
-      height: min(72vw, 850px);
-
-      border: 1px solid #111;
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      position: relative;
-
-      animation: breathe 8s ease-in-out infinite;
-    }
-
-    .intro-circle::before,
-    .intro-circle::after {
-      content: "";
-      position: absolute;
-      border-radius: 50%;
-      border: 1px solid #111;
-      pointer-events: none;
-    }
-
-    .intro-circle::before {
-      inset: 7%;
-    }
-
-    .intro-circle::after {
-      inset: 16%;
-    }
-
-    .intro-title {
-      max-width: 650px;
-      padding: 40px;
-      text-align: center;
-
-      font-size: clamp(3rem, 8vw, 7rem);
-      line-height: .92;
-      font-weight: normal;
-      letter-spacing: -0.05em;
-
-      position: relative;
-      z-index: 2;
-    }
-
-    .scroll-note {
-      position: absolute;
-      bottom: 35px;
-      left: 50%;
-      transform: translateX(-50%);
-
-      font-size: 12px;
-      letter-spacing: .15em;
-      text-transform: uppercase;
-
-      opacity: .6;
-    }
-
-    @keyframes breathe {
-      0%, 100% {
-        transform: scale(1);
-      }
-
-      50% {
-        transform: scale(1.025);
-      }
-    }
-
-
-    /* =========================================================
-       ARTICLE
-    ========================================================= */
 
     main {
-      position: relative;
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 70px 0 100px;
     }
 
-    .article {
-      position: relative;
-      padding: 15vh 0 25vh;
+    /* ---------------------------------
+       HEADER
+    --------------------------------- */
+
+    header {
+      border-top: 1px solid var(--fg);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0 30px;
+      margin-bottom: 60px;
     }
 
-    .scene {
-      min-height: 90vh;
-
+    .meta {
       display: flex;
-      align-items: center;
-      justify-content: center;
-
-      position: relative;
-
-      padding: 10vh 5vw;
-    }
-
-    .circle {
-      width: min(72vw, 820px);
-      aspect-ratio: 1;
-
-      border: 1px solid #111;
-      border-radius: 50%;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      position: relative;
-
-      transition:
-        opacity 1s ease,
-        transform 1.2s cubic-bezier(.2,.8,.2,1);
-    }
-
-    .circle.small {
-      width: min(58vw, 650px);
-    }
-
-    .circle.large {
-      width: min(82vw, 950px);
-    }
-
-    .circle.double::before {
-      content: "";
-      position: absolute;
-      inset: 6%;
-
-      border: 1px solid #111;
-      border-radius: 50%;
-    }
-
-    .circle.double::after {
-      content: "";
-      position: absolute;
-      inset: 13%;
-
-      border: 1px solid #111;
-      border-radius: 50%;
-    }
-
-
-    /* =========================================================
-       TEXTE
-    ========================================================= */
-
-    .text {
-      width: min(70%, 650px);
-
-      font-size: clamp(1.15rem, 1.7vw, 1.55rem);
-      line-height: 1.5;
-
-      position: relative;
-      z-index: 3;
-
-      opacity: 0;
-      transform: translateY(70px);
-
-      transition:
-        opacity 1.1s ease,
-        transform 1.2s cubic-bezier(.2,.8,.2,1);
-    }
-
-    .text.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-
-    .text p {
-      margin-bottom: 1.5em;
-    }
-
-    .text p:last-child {
-      margin-bottom: 0;
-    }
-
-    .lead {
-      font-size: clamp(1.5rem, 2.5vw, 2.4rem);
-      line-height: 1.25;
-    }
-
-    .chapter {
-      font-size: .72rem;
-      letter-spacing: .18em;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 2.5rem;
+      margin-bottom: 30px;
     }
+
+    h1 {
+      margin: 0;
+      max-width: 800px;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      margin-top: 30px;
+      max-width: 700px;
+      font-size: 18px;
+    }
+
+    /* ---------------------------------
+       ARTICLE
+    --------------------------------- */
+
+    article {
+      counter-reset: section;
+    }
+
+    section {
+      position: relative;
+      margin: 0 0 65px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    section::before {
+      counter-increment: section;
+      content: "SECTION " counter(section, decimal-leading-zero);
+
+      display: block;
+      margin-bottom: 25px;
+
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    p {
+      margin: 0 0 22px;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+
+    em {
+      color: #d8d8d8;
+    }
+
+    /* ---------------------------------
+       TITRES
+    --------------------------------- */
+
+    h2 {
+      margin: 0 0 30px;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 35px 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ---------------------------------
+       DIALOGUES
+    --------------------------------- */
 
     .dialogue {
-      font-style: italic;
+      margin: 35px 0;
+      padding: 25px;
+      border-left: 2px solid var(--fg);
+      background: #0b0b0b;
     }
 
-    .big-number {
-      font-size: clamp(5rem, 13vw, 12rem);
-      line-height: .7;
-      position: absolute;
-
-      opacity: .055;
-      z-index: 0;
-
-      user-select: none;
+    .dialogue p {
+      margin: 0;
     }
 
+    .dialogue em {
+      display: block;
+    }
 
-    /* =========================================================
-       LISTE / RECETTE
-    ========================================================= */
+    /* ---------------------------------
+       LISTES / RECETTE
+    --------------------------------- */
 
     .recipe {
-      width: min(76%, 720px);
+      margin: 30px 0;
+      border: 1px solid var(--line);
     }
 
-    .recipe h2 {
-      font-size: clamp(2rem, 4vw, 4rem);
-      font-weight: normal;
-      line-height: 1;
-      margin-bottom: 2rem;
-    }
-
-    .recipe ol {
-      list-style: none;
-      counter-reset: recipe;
-    }
-
-    .recipe li {
-      counter-increment: recipe;
-
-      border-top: 1px solid #111;
-
-      padding: 1.3rem 0;
-
-      display: grid;
-      grid-template-columns: 45px 1fr;
-      gap: 1rem;
-
-      font-size: clamp(1.05rem, 1.5vw, 1.35rem);
-      line-height: 1.4;
-    }
-
-    .recipe li::before {
-      content: counter(recipe) ".";
-      font-style: italic;
-    }
-
-    .ingredient-title {
-      font-size: .75rem;
-      letter-spacing: .18em;
+    .recipe-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 1.5rem;
     }
 
-    .percentages {
-      margin: 2rem 0;
-      border-top: 1px solid #111;
-      border-bottom: 1px solid #111;
+    .recipe-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .recipe-item:last-child {
+      border-bottom: none;
     }
 
     .percentage {
-      display: flex;
-      justify-content: space-between;
-      gap: 2rem;
-
-      padding: .8rem 0;
-
-      font-size: 1.1rem;
+      font-weight: 700;
+      white-space: nowrap;
     }
 
+    ul {
+      margin: 20px 0 25px;
+      padding-left: 25px;
+    }
 
-    /* =========================================================
+    li {
+      padding-left: 5px;
+      margin-bottom: 8px;
+    }
+
+    /* ---------------------------------
+       NOTES TECHNIQUES
+    --------------------------------- */
+
+    .technical-note {
+      margin: 35px 0;
+      padding: 20px;
+      border: 1px dashed #444;
+      color: #c5c5c5;
+      font-size: 13px;
+    }
+
+    .technical-note::before {
+      content: "NOTE / ";
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    /* ---------------------------------
        FIN
-    ========================================================= */
+    --------------------------------- */
 
     .ending {
-      min-height: 100vh;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      padding: 10vh 5vw;
-    }
-
-    .ending-circle {
-      width: min(75vw, 850px);
-      aspect-ratio: 1;
-
-      border-radius: 50%;
-      border: 1px solid #111;
-
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      text-align: center;
-      padding: 12%;
-
-      position: relative;
-    }
-
-    .ending-text {
-      font-size: clamp(2rem, 5vw, 5rem);
-      line-height: 1.05;
-      letter-spacing: -.035em;
-
-      opacity: 0;
-      transform: scale(.9);
-
-      transition:
-        opacity 1.4s ease,
-        transform 1.4s cubic-bezier(.2,.8,.2,1);
-    }
-
-    .ending-text.visible {
-      opacity: 1;
-      transform: scale(1);
-    }
-
-
-    /* =========================================================
-       NOTE DE BAS DE PAGE
-    ========================================================= */
-
-    .footnote {
-      max-width: 700px;
-
-      margin: 10vh auto 8vh;
-      padding: 0 30px;
-
-      font-size: .75rem;
+      font-size: 21px;
       line-height: 1.5;
-
-      opacity: .65;
     }
 
-
-    /* =========================================================
-       PETITS ÉLÉMENTS FLOTTANTS
-    ========================================================= */
-
-    .floating {
-      position: absolute;
-
-      width: 14px;
-      height: 14px;
-
-      border: 1px solid #111;
-      border-radius: 50%;
-
-      opacity: .7;
-
-      pointer-events: none;
+    footer {
+      margin-top: 100px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
     }
 
-    .f1 {
-      top: 18%;
-      left: 12%;
-    }
+    /* ---------------------------------
+       RESPONSIVE
+    --------------------------------- */
 
-    .f2 {
-      top: 65%;
-      right: 12%;
-      width: 8px;
-      height: 8px;
-    }
+    @media (max-width: 600px) {
+      main {
+        width: min(100% - 28px, 900px);
+        padding-top: 35px;
+      }
 
-    .f3 {
-      top: 35%;
-      right: 8%;
-      width: 22px;
-      height: 22px;
-    }
+      header {
+        margin-bottom: 40px;
+      }
 
-    .f4 {
-      bottom: 20%;
-      left: 9%;
-      width: 6px;
-      height: 6px;
-    }
+      .meta {
+        flex-direction: column;
+        gap: 5px;
+      }
 
-
-    /* =========================================================
-       MOBILE
-    ========================================================= */
-
-    @media (max-width: 700px) {
+      h1 {
+        font-size: 38px;
+      }
 
       .intro {
-        min-height: 100svh;
+        font-size: 16px;
       }
 
-      .intro-circle {
-        width: 90vw;
-        height: 90vw;
+      section {
+        margin-bottom: 50px;
       }
 
-      .intro-title {
-        padding: 25px;
-        font-size: 15vw;
+      .recipe-item {
+        grid-template-columns: 65px 1fr;
+        gap: 12px;
       }
 
-      .scene {
-        min-height: 75vh;
-        padding: 7vh 4vw;
-      }
-
-      .circle,
-      .circle.small,
-      .circle.large {
-        width: 92vw;
-      }
-
-      .text {
-        width: 67%;
-        font-size: 1rem;
-        line-height: 1.48;
-      }
-
-      .lead {
-        font-size: 1.35rem;
-      }
-
-      .recipe {
-        width: 68%;
-      }
-
-      .recipe li {
-        grid-template-columns: 30px 1fr;
-        gap: .5rem;
-        font-size: 1rem;
-      }
-
-      .ending-circle {
-        width: 90vw;
-      }
-
-      .ending-text {
-        font-size: 9vw;
-      }
-
-      .footnote {
-        padding: 0 20px;
+      .dialogue {
+        padding: 18px;
       }
     }
   </style>
 </head>
 
-
 <body>
 
-  <!-- =======================================================
-       INTRODUCTION
-  ======================================================== -->
+  <main>
 
-  <header class="intro">
-
-    <div class="intro-circle">
-      <h1 class="intro-title">
-        Recette de<br>
-        ginger beer<br>
-        maison
-      </h1>
-    </div>
-
-    <div class="scroll-note">
-      ↓ faire défiler
-    </div>
-
-  </header>
-
-
-  <!-- =======================================================
-       ARTICLE
-  ======================================================== -->
-
-  <main class="article">
-
-
-    <!-- INTRODUCTION -->
-
-    <section class="scene">
-
-      <div class="floating f1"></div>
-      <div class="floating f2"></div>
-
-      <div class="circle double parallax">
-
-        <div class="text lead reveal">
-
-          <p>
-            La ginger beer, c’est avant tout une aventure du vivant.
-            Une invitation à la vie de revenir dans nos assiettes.
-            Et alors pour ça, soyons sympa, offrons lui le gîte et le couvert !
-          </p>
-
-        </div>
-
+    <header>
+      <div class="meta">
+        <span>MANUEL / FERMENTATION</span>
+        <span>DOC. 001</span>
       </div>
 
-    </section>
+      <h1>Recette de<br>ginger beer maison</h1>
+
+      <p class="intro">
+        La ginger beer, c’est avant tout une aventure du vivant.
+        Une invitation à la vie de revenir dans nos assiettes.
+        Et alors pour ça, soyons sympa, offrons lui le gîte et le couvert !
+      </p>
+    </header>
 
 
-    <!-- L'HISTOIRE -->
+    <article>
 
-    <section class="scene">
+      <section>
 
-      <div class="big-number">01</div>
+        <p>
+          Pour commencer, je te propose de complètement transformer ta vision
+          de la ginger beer. Ça va bien au delà de la recette maison.
+          Là c’est carrément biblique.
+        </p>
 
-      <div class="circle large parallax">
+        <p>
+          C’est l’histoire de deux êtres créateurs qui se rencontrent et qui
+          fusionnent, dominés par une force divine, lors d’une nuit chaude
+          d’été jamaïcain.
+        </p>
 
-        <div class="text reveal">
+        <p>
+          En protagonistes, y’a le ginger beer maker, et y’a la ginger beer,
+          prête à être faite. Et puis y’a cette magicienne de vie.
+        </p>
 
-          <div class="chapter">Chapitre I — La rencontre</div>
+        <p>
+          C’est une soirée d’août sans nuages, les odeurs de plantains frits
+          embaument les rues, les bruits de fête se faufilent par la fenêtre
+          ouverte et chantent dans la chambre d’hôtel.
+        </p>
 
+        <p>
+          Quelle chaleur torride !
+        </p>
+
+        <p>
+          Les corps sont en hâte de se rencontrer, transpirants, sensibles et
+          chargés, tendus comme une peau de tambour chauffée.
+          Le sang bouillonne à l’intérieur, et le cœur plein est prêt à pomper
+          toute cette vie qui a besoin de s’exprimer.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <p>
+          La ginger beer s’est enrobée dans un grand drap satin alors que
+          le ginger beer maker allume les pales en bois du ventilateur au plafond :
+        </p>
+
+        <div class="dialogue">
           <p>
-            Pour commencer, je te propose de complètement transformer
-            ta vision de la ginger beer.
+            <em>
+              « Ta température idéale, c’est ma température idéale, chérie ».
+              Elle lui répond du tac au tac :
+              « Nos corps sont fait pour être ensemble, ils sont tous les deux
+              composés à 60% d’eau ».
+            </em>
           </p>
 
-          <p>
-            Ça va bien au delà de la recette maison.
-            Là c’est carrément biblique.
-          </p>
+          <br>
 
           <p>
-            C’est l’histoire de deux êtres créateurs qui se rencontrent
-            et qui fusionnent, dominés par une force divine, lors d’une
-            nuit chaude d’été jamaïcain.
+            <em>
+              Excité, il empoigne le combiné :
+              « Room service ? Apportez-nous du champagne, du rhum et des
+              gateaux au gingembre, la nuit va être longue ».
+            </em>
           </p>
-
-          <p>
-            En protagonistes, y’a le ginger beer maker, et y’a la ginger
-            beer, prête à être faite.
-          </p>
-
-          <p>
-            Et puis y’a cette magicienne de vie.
-          </p>
-
         </div>
 
-      </div>
+        <p>
+          Là dedans, il y a tous les éléments pour faire une bonne ginger beer :
+        </p>
 
-    </section>
-
-
-    <!-- JAMAÏQUE -->
-
-    <section class="scene">
-
-      <div class="floating f3"></div>
-
-      <div class="circle small parallax">
-
-        <div class="text reveal">
-
-          <div class="chapter">Chapitre II — Une nuit d'août</div>
-
-          <p>
-            C’est une soirée d’août sans nuages, les odeurs de plantains
-            frits embaument les rues, les bruits de fête se faufilent
-            par la fenêtre ouverte et chantent dans la chambre d’hôtel.
-          </p>
-
-          <p>
-            Quelle chaleur torride !
-          </p>
-
-          <p>
-            Les corps sont en hâte de se rencontrer, transpirants,
-            sensibles et chargés, tendus comme une peau de tambour
-            chauffée.
-          </p>
-
-          <p>
-            Le sang bouillonne à l’intérieur, et le cœur plein est prêt
-            à pomper toute cette vie qui a besoin de s’exprimer.
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
+      </section>
 
 
-    <!-- DIALOGUE -->
+      <section>
 
-    <section class="scene">
+        <h2>Le gîte</h2>
 
-      <div class="circle double parallax">
+        <p>
+          <strong>01.</strong>
+          Température ambiante pour que la vie
+          (aka les microorganismes rhoooo quelle vulgarité vous m’obligez à le dire)
+          fasse ce qu’elle a à faire (wink wink).
+        </p>
 
-        <div class="text reveal">
+        <p>
+          <strong>02.</strong>
+          Une majorité d’eau dans la bouteille
+          (tout cet exercice, il faut s’hydrater !)
+          avec du jus de citron c’est encore meilleur.
+        </p>
 
-          <p>
-            La ginger beer s’est enrobée dans un grand drap satin alors
-            que le ginger beer maker allume les pales en bois du ventilateur
-            au plafond :
-          </p>
-
-          <p class="dialogue">
-            « Ta température idéale, c’est ma température idéale, chérie ».
-          </p>
-
-          <p>
-            Elle lui répond du tac au tac :
-          </p>
-
-          <p class="dialogue">
-            « Nos corps sont fait pour être ensemble, ils sont tous les
-            deux composés à 60% d’eau ».
-          </p>
-
-          <p>
-            Excité, il empoigne le combiné :
-          </p>
-
-          <p class="dialogue">
-            « Room service ? Apportez-nous du champagne, du rhum et des
-            gâteaux au gingembre, la nuit va être longue ».
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
+      </section>
 
 
-    <!-- LE GÎTE -->
+      <section>
 
-    <section class="scene">
+        <h2>Le couvert</h2>
 
-      <div class="big-number">02</div>
+        <p>
+          <strong>03.</strong>
+          Le sucre pour prendre des forces et du gingembre pour durrrer toute la night.
+        </p>
 
-      <div class="circle large parallax">
+        <p>
+          <strong>04.</strong>
+          Les 60% ne sont pas anodins non plus, ils te rappellent que faire tes
+          calculs en pourcentage, c’est le must
+          (parce que ça marche avec n’importe quel volume de préparation).
+        </p>
 
-        <div class="text reveal">
+        <p>
+          Et alors, les 40% restant c’est quoi ?
+        </p>
 
-          <div class="chapter">Le gîte</div>
+        <p>
+          C’est là que le talent du ginger beer maker arrive en scène et qu’il
+          faut se lâcher, tout en gardant la main sur la technique.
+        </p>
 
-          <p class="lead">
-            Là-dedans, il y a tous les éléments pour faire une bonne
-            ginger beer.
-          </p>
+        <h3>Ma touche personnelle</h3>
 
-          <div class="recipe">
+        <p>
+          Dont tu peux t’inspirer pour ta première tentative :
+        </p>
 
-            <ol>
+        <div class="recipe">
 
-              <li>
-                <div>
-                  Température ambiante pour que la vie
-                  (aka les microorganismes, rhoooo quelle vulgarité
-                  vous m’obligez à le dire) fasse ce qu’elle a à faire
-                  (wink wink).
-                </div>
-              </li>
+          <div class="recipe-header">
+            Formule / première tentative
+          </div>
 
-              <li>
-                <div>
-                  Une majorité d’eau dans la bouteille
-                  (tout cet exercice, il faut s’hydrater !)
-                  avec du jus de citron c’est encore meilleur.
-                </div>
-              </li>
+          <div class="recipe-item">
+            <span class="percentage">10%</span>
+            <span>levain de gingembre</span>
+          </div>
 
-            </ol>
+          <div class="recipe-item">
+            <span class="percentage">20%</span>
+            <span>sucre*</span>
+          </div>
 
+          <div class="recipe-item">
+            <span class="percentage">10%</span>
+            <span>jus de gingembre et de citron, à combiner selon tes préférences</span>
           </div>
 
         </div>
 
-      </div>
+      </section>
 
-    </section>
 
+      <section>
 
-    <!-- LE COUVERT -->
+        <h2>05 / Alcool</h2>
 
-    <section class="scene">
+        <p>
+          Le champagne et le rhum pour que tu te souviennes que le vilain alcool
+          est impliqué dans l’affaire.
+        </p>
 
-      <div class="circle double parallax">
+        <p>
+          En effet, petit rappel théorique : les levures du levain consomment
+          le sucre et produisent de l’alcool et du gaz carbonique
+          (co2 #bulles), comme nous quand on pète et qu’on fait caca.
+        </p>
 
-        <div class="text reveal">
+        <p>
+          Heureusement, le gâteau a épongé le champagne donc ça va !
+          Pour te rappeler que les bactéries du levain mangent une partie de l’alcool…
+        </p>
 
-          <div class="chapter">Le couvert</div>
+        <p>
+          Mais horreur, ils ont aussi mis du rhum sur le gâteau pour le faire flamber !
+          Pour te rappeler que certes 20% de sucre ça fait beaucoup, mais après
+          la fermentation une partie de ce sucre est consommé donc on le sent moins,
+          comme un gâteau alcoolisé…
+        </p>
 
-          <div class="recipe">
+        <p>
+          D’ailleurs, la ginger beer au rhum ça passe très bien.
+          Et une ginger beer qui se respecte doit être traitée comme du champagne :
+          un beau verre et tout et tout.
+        </p>
 
-            <ol start="3">
+      </section>
 
-              <li>
-                <div>
-                  Le sucre pour prendre des forces et du gingembre
-                  pour durrrer toute la night.
-                </div>
-              </li>
 
-              <li>
-                <div>
-                  Les 60% ne sont pas anodins non plus, ils te rappellent
-                  que faire tes calculs en pourcentage, c’est le must
-                  (parce que ça marche avec n’importe quel volume de préparation).
-                </div>
-              </li>
+      <section>
 
-            </ol>
+        <h2>Procédure / état final</h2>
 
-          </div>
+        <p>
+          Tu l’auras compris, faire de la ginger beer c’est sensuel,
+          c’est romantique.
+        </p>
 
-          <p>
-            Et alors, les 40% restant c’est quoi ?
-          </p>
+        <p class="ending">
+          Il faut goûter, goûter, et re goûter tout le temps.
+        </p>
 
-          <p>
-            C’est là que le talent du ginger beer maker arrive en scène
-            et qu’il faut se lâcher, tout en gardant la main sur la technique.
-          </p>
+        <p>
+          Il faut être un minimum propre pour être classe, mais pas avoir peur
+          d’être cru•e et vivant•e non plus.
+        </p>
 
-        </div>
+        <p>
+          Il faut aussi savoir travailler en rythme : la musique aide et c’est
+          bien de faire des pauses.
+        </p>
 
-      </div>
+        <p>
+          Quand elle est à son apogée (#beaucoup2bulles), il faut parfois savoir
+          s’arrêter pour faire durer le plaisir : la mettre au frigo
+          (le froid c’est ma technique préférée) pour la déguster longtemps.
+        </p>
 
-    </section>
+        <p>
+          Des semaines durant !
+        </p>
 
-
-    <!-- RECETTE -->
-
-    <section class="scene">
-
-      <div class="circle large parallax">
-
-        <div class="text reveal">
-
-          <div class="chapter">Ma touche personnelle</div>
-
-          <p>
-            Dont tu peux t’inspirer pour ta première tentative :
-          </p>
-
-          <div class="percentages">
-
-            <div class="percentage">
-              <span>Levain de gingembre</span>
-              <strong>10%</strong>
-            </div>
-
-            <div class="percentage">
-              <span>Sucre*</span>
-              <strong>20%</strong>
-            </div>
-
-            <div class="percentage">
-              <span>Jus de gingembre + citron</span>
-              <strong>10%</strong>
-            </div>
-
-          </div>
-
-          <p>
-            À combiner selon tes préférences.
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- ALCOOL -->
-
-    <section class="scene">
-
-      <div class="big-number">03</div>
-
-      <div class="circle small parallax">
-
-        <div class="text reveal">
-
-          <div class="chapter">Le champagne & le rhum</div>
-
-          <p>
-            Le champagne et le rhum pour que tu te souviennes que le vilain
-            alcool est impliqué dans l’affaire.
-          </p>
-
-          <p>
-            En effet, petit rappel théorique : les levures du levain
-            consomment le sucre et produisent de l’alcool et du gaz
-            carbonique (CO₂ #bulles), comme nous quand on pète et qu’on
-            fait caca.
-          </p>
-
-          <p>
-            Heureusement, le gâteau a épongé le champagne donc ça va !
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- SUITE -->
-
-    <section class="scene">
-
-      <div class="circle double parallax">
-
-        <div class="text reveal">
-
-          <p>
-            Pour te rappeler que les bactéries du levain mangent une
-            partie de l’alcool…
-          </p>
-
-          <p>
-            Mais horreur, ils ont aussi mis du rhum sur le gâteau
-            pour le faire flamber !
-          </p>
-
-          <p>
-            Pour te rappeler que certes 20% de sucre ça fait beaucoup,
-            mais après la fermentation une partie de ce sucre est consommé
-            donc on le sent moins, comme un gâteau alcoolisé…
-          </p>
-
-          <p>
-            D’ailleurs, la ginger beer au rhum ça passe très bien.
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- CHAMPAGNE -->
-
-    <section class="scene">
-
-      <div class="circle small parallax">
-
-        <div class="text lead reveal">
-
-          <p>
-            Et une ginger beer qui se respecte doit être traitée comme
-            du champagne : un beau verre et tout et tout.
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- CONCLUSION -->
-
-    <section class="scene">
-
-      <div class="circle large parallax">
-
-        <div class="text reveal">
-
-          <div class="chapter">Chapitre final</div>
-
-          <p class="lead">
-            Tu l’auras compris, faire de la ginger beer c’est sensuel,
-            c’est romantique.
-          </p>
-
-          <p>
-            Il faut goûter, goûter, et re goûter tout le temps.
-          </p>
-
-          <p>
-            Il faut être un minimum propre pour être classe, mais pas
-            avoir peur d’être cru•e et vivant•e non plus.
-          </p>
-
-          <p>
-            Il faut aussi savoir travailler en rythme : la musique aide
-            et c’est bien de faire des pauses.
-          </p>
-
-          <p>
-            Quand elle est à son apogée (#beaucoup2bulles), il faut parfois
-            savoir s’arrêter pour faire durer le plaisir : la mettre au
-            frigo (le froid c’est ma technique préférée) pour la déguster
-            longtemps.
-          </p>
-
-          <p>
-            Des semaines durant !
-          </p>
-
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- FIN -->
-
-    <section class="ending">
-
-      <div class="ending-circle">
-
-        <div class="ending-text reveal">
+        <p class="ending">
           Tchintchin.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <div class="technical-note">
+          Pour calculer les pourcentages c’est simple.
+          Par exemple, pour calculer combien de grammes de sucre je dois mettre
+          pour 1 L de volume total de boisson, si je choisis 20% de sucre :
+          <strong>(1000 [volume total en ml] × 0,20)</strong>.
+          Comme 1 L de ginger beer ≈ 1 kg, le résultat peut être considéré
+          autant comme des grammes que des millilitres selon les ingrédients !
         </div>
 
-      </div>
+      </section>
 
-    </section>
+    </article>
 
 
-    <!-- NOTE -->
-
-    <aside class="footnote">
-
-      <strong>*</strong>
-      Pour calculer les pourcentages c’est simple.
-      Par exemple, pour calculer combien de grammes de sucre je dois
-      mettre pour 1 L de volume total de boisson, si je choisis 20%
-      de sucre : (1000 [volume total en ml] × 0,20).
-      Comme 1 L de ginger beer ≈ 1 kg, le résultat peut être considéré
-      autant comme des grammes que des millilitres selon les ingrédients !
-
-    </aside>
+    <footer>
+      GINGER BEER / FERMENTATION / MANUEL TECHNIQUE<br>
+      DOC. 001 — FIN DU PROTOCOLE
+    </footer>
 
   </main>
-
-
-  <!-- =======================================================
-       JAVASCRIPT
-  ======================================================== -->
-
-  <script>
-
-    /*
-     * Apparition / disparition des textes
-     * ----------------------------------
-     * Le texte devient visible lorsqu'il entre dans une zone
-     * centrale de l'écran, puis disparaît progressivement
-     * lorsqu'il en sort.
-     */
-
-    const reveals = document.querySelectorAll(".reveal");
-
-    const revealObserver = new IntersectionObserver(
-      (entries) => {
-
-        entries.forEach((entry) => {
-
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          } else {
-            entry.target.classList.remove("visible");
-          }
-
-        });
-
-      },
-      {
-        threshold: 0.25,
-        rootMargin: "-10% 0px -10% 0px"
-      }
-    );
-
-    reveals.forEach((element) => {
-      revealObserver.observe(element);
-    });
-
-
-    /*
-     * PARALLAX
-     * --------
-     * Les cercles se déplacent légèrement à une vitesse
-     * différente du scroll.
-     */
-
-    const parallaxElements = document.querySelectorAll(".parallax");
-
-    let ticking = false;
-
-    function updateParallax() {
-
-      const viewportCenter = window.innerHeight / 2;
-
-      parallaxElements.forEach((element) => {
-
-        const rect = element.getBoundingClientRect();
-
-        const elementCenter = rect.top + rect.height / 2;
-
-        const distance = elementCenter - viewportCenter;
-
-        const movement = distance * -0.08;
-
-        element.style.transform =
-          `translate3d(0, ${movement}px, 0)`;
-
-      });
-
-      ticking = false;
-    }
-
-    function requestParallax() {
-
-      if (!ticking) {
-        window.requestAnimationFrame(updateParallax);
-        ticking = true;
-      }
-
-    }
-
-    window.addEventListener("scroll", requestParallax, {
-      passive: true
-    });
-
-    window.addEventListener("resize", requestParallax);
-
-    updateParallax();
-
-
-    /*
-     * INTRODUCTION
-     * ------------
-     * Le grand cercle d'accueil se réduit légèrement
-     * pendant le départ du scroll.
-     */
-
-    const introCircle = document.querySelector(".intro-circle");
-
-    window.addEventListener("scroll", () => {
-
-      const scroll = window.scrollY;
-      const max = window.innerHeight;
-
-      const progress = Math.min(scroll / max, 1);
-
-      introCircle.style.transform =
-        `scale(${1 - progress * 0.12})`;
-
-      introCircle.style.opacity =
-        `${1 - progress * 0.75}`;
-
-    }, {
-      passive: true
-    });
-
-  </script>
 
 </body>
 </html>
