@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Recette de ginger beer maison</title>
+
+  <style>
+    :root {
+      --bg: #050505;
+      --fg: #f2f2f2;
+      --muted: #8c8c8c;
+      --line: #292929;
+      --accent: #ffffff;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--fg);
+      font-family:
+        "Courier New",
+        Courier,
+        monospace;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    ::selection {
+      background: var(--fg);
+      color: var(--bg);
+    }
+
+    main {
+      width: min(900px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 70px 0 100px;
+    }
+
+    /* ---------------------------------
+       HEADER
+    --------------------------------- */
+
+    header {
+      border-top: 1px solid var(--fg);
+      border-bottom: 1px solid var(--line);
+      padding: 22px 0 30px;
+      margin-bottom: 60px;
+    }
+
+    .meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      color: var(--muted);
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 800px;
+      font-size: clamp(34px, 6vw, 64px);
+      line-height: 1;
+      font-weight: 400;
+      letter-spacing: -0.05em;
+      text-transform: uppercase;
+    }
+
+    .intro {
+      margin-top: 30px;
+      max-width: 700px;
+      font-size: 18px;
+    }
+
+    /* ---------------------------------
+       ARTICLE
+    --------------------------------- */
+
+    article {
+      counter-reset: section;
+    }
+
+    section {
+      position: relative;
+      margin: 0 0 65px;
+      padding-top: 28px;
+      border-top: 1px solid var(--line);
+    }
+
+    section::before {
+      counter-increment: section;
+      content: "SECTION " counter(section, decimal-leading-zero);
+
+      display: block;
+      margin-bottom: 25px;
+
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+    }
+
+    p {
+      margin: 0 0 22px;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+
+    em {
+      color: #d8d8d8;
+    }
+
+    /* ---------------------------------
+       TITRES
+    --------------------------------- */
+
+    h2 {
+      margin: 0 0 30px;
+      font-size: 24px;
+      line-height: 1.2;
+      font-weight: 400;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+
+    h3 {
+      margin: 35px 0 10px;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    /* ---------------------------------
+       DIALOGUES
+    --------------------------------- */
+
+    .dialogue {
+      margin: 35px 0;
+      padding: 25px;
+      border-left: 2px solid var(--fg);
+      background: #0b0b0b;
+    }
+
+    .dialogue p {
+      margin: 0;
+    }
+
+    .dialogue em {
+      display: block;
+    }
+
+    /* ---------------------------------
+       LISTES / RECETTE
+    --------------------------------- */
+
+    .recipe {
+      margin: 30px 0;
+      border: 1px solid var(--line);
+    }
+
+    .recipe-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .recipe-item {
+      display: grid;
+      grid-template-columns: 80px 1fr;
+      gap: 20px;
+      padding: 15px 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .recipe-item:last-child {
+      border-bottom: none;
+    }
+
+    .percentage {
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    ul {
+      margin: 20px 0 25px;
+      padding-left: 25px;
+    }
+
+    li {
+      padding-left: 5px;
+      margin-bottom: 8px;
+    }
+
+    /* ---------------------------------
+       NOTES TECHNIQUES
+    --------------------------------- */
+
+    .technical-note {
+      margin: 35px 0;
+      padding: 20px;
+      border: 1px dashed #444;
+      color: #c5c5c5;
+      font-size: 13px;
+    }
+
+    .technical-note::before {
+      content: "NOTE / ";
+      color: var(--fg);
+      font-weight: 700;
+    }
+
+    /* ---------------------------------
+       FIN
+    --------------------------------- */
+
+    .ending {
+      font-size: 21px;
+      line-height: 1.5;
+    }
+
+    footer {
+      margin-top: 100px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    /* ---------------------------------
+       RESPONSIVE
+    --------------------------------- */
+
+    @media (max-width: 600px) {
+      main {
+        width: min(100% - 28px, 900px);
+        padding-top: 35px;
+      }
+
+      header {
+        margin-bottom: 40px;
+      }
+
+      .meta {
+        flex-direction: column;
+        gap: 5px;
+      }
+
+      h1 {
+        font-size: 38px;
+      }
+
+      .intro {
+        font-size: 16px;
+      }
+
+      section {
+        margin-bottom: 50px;
+      }
+
+      .recipe-item {
+        grid-template-columns: 65px 1fr;
+        gap: 12px;
+      }
+
+      .dialogue {
+        padding: 18px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <main>
+
+    <header>
+      <div class="meta">
+        <span>MANUEL LOULOU / FERMENTATION MAGIQUE</span>
+        <span>DOC. 001</span>
+      </div>
+
+      <h1>Recette de<br>ginger beer maison</h1>
+
+      <p class="intro">
+        Salut toi, apprenti•e boissonier•ère ! Vois-tu, la ginger beer, c’est avant tout une aventure du vivant.
+        Une invitation à la vie de revenir dans nos assiettes.
+        Et alors pour ça, soyons sympa, offrons lui le gîte et le couvert !
+      </p>
+    </header>
+
+
+    <article>
+
+      <section>
+
+        <p>
+          Pour commencer, je te propose de complètement transformer ta vision
+          de la ginger beer. Ça va bien au delà de la recette maison.
+          Là c’est carrément biblique.
+        </p>
+
+        <p>
+          C’est l’histoire de deux êtres créateurs qui se rencontrent et qui
+          fusionnent, dominés par une force divine, lors d’une nuit chaude
+          d’été jamaïcain.
+        </p>
+
+        <p>
+          En protagonistes, y’a le ginger beer maker, et y’a la ginger beer,
+          prête à être faite. Et puis y’a cette magicienne de vie.
+        </p>
+
+        <p>
+          C’est une soirée d’août sans nuages, les odeurs de plantains frits
+          embaument les rues, les bruits de fête se faufilent par la fenêtre
+          ouverte et chantent dans la chambre d’hôtel.
+        </p>
+
+        <p>
+          Quelle chaleur torride !
+        </p>
+
+        <p>
+          Les corps sont en hâte de se rencontrer, transpirants, sensibles et
+          chargés, tendus comme une peau de tambour chauffée.
+          Le sang bouillonne à l’intérieur, et le cœur plein est prêt à pomper
+          toute cette vie qui a besoin de s’exprimer.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <p>
+          La ginger beer s’est enrobée dans un grand drap satin alors que
+          le ginger beer maker allume les pales en bois du ventilateur au plafond :
+        </p>
+
+        <div class="dialogue">
+          <p>
+            <em>
+              « Ta température idéale, c’est ma température idéale, chérie ».
+              Elle lui répond du tac au tac :
+              « Nos corps sont fait pour être ensemble, ils sont tous les deux
+              composés à 60% d’eau ».
+            </em>
+          </p>
+
+          <br>
+
+          <p>
+            <em>
+              Excité, il empoigne le combiné :
+              « Room service ? Apportez-nous du champagne, du rhum et des
+              gateaux au gingembre, la nuit va être longue ».
+            </em>
+          </p>
+        </div>
+
+        <p>
+          Là dedans, il y a tous les éléments pour faire une bonne ginger beer :
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <h2>Le gîte</h2>
+
+        <p>
+          <strong>01.</strong>
+          Température ambiante pour que la vie
+          (aka les microorganismes rhoooo quelle vulgarité vous m’obligez à le dire)
+          fasse ce qu’elle a à faire (wink wink).
+        </p>
+
+        <p>
+          <strong>02.</strong>
+          Une majorité d’eau dans la bouteille
+          (tout cet exercice, il faut s’hydrater !)
+          avec du jus de citron c’est encore meilleur.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <h2>Le couvert</h2>
+
+        <p>
+          <strong>03.</strong>
+          Le sucre pour prendre des forces et du gingembre pour durrrer toute la night.
+        </p>
+
+        <p>
+          <strong>04.</strong>
+          Les 60% ne sont pas anodins non plus, ils te rappellent que faire tes
+          calculs en pourcentage, c’est le must
+          (parce que ça marche avec n’importe quel volume de préparation).
+        </p>
+
+        <p>
+          Et alors, les 40% restant c’est quoi ?
+        </p>
+
+        <p>
+          C’est là que le talent du ginger beer maker arrive en scène et qu’il
+          faut se lâcher, tout en gardant la main sur la technique.
+        </p>
+
+        <h3>Ma touche personnelle</h3>
+
+        <p>
+          Dont tu peux t’inspirer pour ta première tentative :
+        </p>
+
+        <div class="recipe">
+
+          <div class="recipe-header">
+            Formule / première tentative
+          </div>
+
+          <div class="recipe-item">
+            <span class="percentage">10%</span>
+            <span>levain de gingembre</span>
+          </div>
+
+          <div class="recipe-item">
+            <span class="percentage">20%</span>
+            <span>sucre*</span>
+          </div>
+
+          <div class="recipe-item">
+            <span class="percentage">10%</span>
+            <span>jus de gingembre et de citron, à combiner selon tes préférences</span>
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <section>
+
+        <h2>05 / Alcool</h2>
+
+        <p>
+          Le champagne et le rhum pour que tu te souviennes que le vilain alcool
+          est impliqué dans l’affaire.
+        </p>
+
+        <p>
+          En effet, petit rappel théorique : les levures du levain consomment
+          le sucre et produisent de l’alcool et du gaz carbonique
+          (co2 #bulles), comme nous quand on pète et qu’on fait caca.
+        </p>
+
+        <p>
+          Heureusement, le gâteau a épongé le champagne donc ça va !
+          Pour te rappeler que les bactéries du levain mangent une partie de l’alcool…
+        </p>
+
+        <p>
+          Mais horreur, ils ont aussi mis du rhum sur le gâteau pour le faire flamber !
+          Pour te rappeler que certes 20% de sucre ça fait beaucoup, mais après
+          la fermentation une partie de ce sucre est consommé donc on le sent moins,
+          comme un gâteau alcoolisé…
+        </p>
+
+        <p>
+          D’ailleurs, la ginger beer au rhum ça passe très bien.
+          Et une ginger beer qui se respecte doit être traitée comme du champagne :
+          un beau verre et tout et tout.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <h2>Procédure / état final</h2>
+
+        <p>
+          Tu l’auras compris, faire de la ginger beer c’est sensuel,
+          c’est romantique.
+        </p>
+
+        <p class="ending">
+          Il faut goûter, goûter, et re goûter tout le temps.
+        </p>
+
+        <p>
+          Il faut être un minimum propre pour être classe, mais pas avoir peur
+          d’être cru•e et vivant•e non plus.
+        </p>
+
+        <p>
+          Il faut aussi savoir travailler en rythme : la musique aide et c’est
+          bien de faire des pauses.
+        </p>
+
+        <p>
+          Quand elle est à son apogée (#beaucoup2bulles), il faut parfois savoir
+          s’arrêter pour faire durer le plaisir : la mettre au frigo
+          (le froid c’est ma technique préférée) pour la déguster longtemps.
+        </p>
+
+        <p>
+          Des semaines durant !
+        </p>
+
+        <p class="ending">
+          Tchintchin.
+        </p>
+
+      </section>
+
+
+      <section>
+
+        <div class="technical-note">
+          Pour calculer les pourcentages c’est simple.
+          Par exemple, pour calculer combien de grammes de sucre je dois mettre
+          pour 1 L de volume total de boisson, si je choisis 20% de sucre :
+          <strong>(1000 [volume total en ml] × 0,20)</strong>.
+          Comme 1 L de ginger beer ≈ 1 kg, le résultat peut être considéré
+          autant comme des grammes que des millilitres selon les ingrédients !
+        </div>
+
+      </section>
+
+    </article>
+
+
+    <footer>
+      GINGER BEER / FERMENTATION / MANUEL TECHNIQUE<br>
+      DOC. 001 — FIN DU PROTOCOLE
+    </footer>
+
+  </main>
+
+</body>
+</html>
