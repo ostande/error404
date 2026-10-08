@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
 
@@ -102,11 +102,11 @@
 <body>
 
     <!-- =========================================
-         TON ARTICLE COMMENCE ICI
+         ARTICLE COMMENCE ICI
          ========================================= -->
 
 <h1>Social & Emotional Learning for teens</h1>
-<h6>font-size: 20px; Written the 8th of October 2026 by ostande</h6>
+<p>font-size: 20px; <strong>Written the 8th of October 2026 by ostande</strong></p>
 
 <p style="text-align: justify;">
 How to relate to ourselves and to each-other?
