@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+
+    <!-- Adaptation automatique aux écrans mobiles -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>SEL Accueil</title>
+
+    <!-- Police Capriola -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Capriola&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================
+           RÉGLAGES GÉNÉRAUX
+           ========================= */
+
+        body {
+            font-family: "Capriola", sans-serif;
+
+            /* Couleur du texte */
+            color: #333333;
+
+            /* Couleur du fond */
+            background-color: #ffffff;
+
+            /* Taille du texte */
+            font-size: 18px;
+
+            /* Espacement entre les lignes */
+            line-height: 1.7;
+
+            /* Largeur et marges */
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px 20px;
+        }
+
+        /* =========================
+           TITRE
+           ========================= */
+
+        h1 {
+            color: #222222;
+            font-size: 2.2em;
+            margin-bottom: 10px;
+        }
+
+        /* =========================
+           SOUS-TITRES
+           ========================= */
+
+        h2 {
+            color: #555555;
+            font-size: 1.5em;
+            margin-top: 40px;
+        }
+
+        /* =========================
+           LIENS
+           ========================= */
+
+        a {
+            color: #0066cc;
+        }
+
+        /* =========================
+           PIED DE PAGE
+           ========================= */
+
+        footer {
+            margin-top: 60px;
+            padding-top: 20px;
+            border-top: 1px solid #dddddd;
+
+            font-size: 0.8em;
+            color: #888888;
+            text-align: center;
+        }
+
+        /* =========================
+           ADAPTATION MOBILE
+           ========================= */
+
+        @media (max-width: 600px) {
+            body {
+                font-size: 16px;
+                padding: 20px 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+
+
+<body>
+
+    <!-- =========================================
+         TON ARTICLE COMMENCE ICI
+         ========================================= -->
+
+<h1>Social & Emotional Learning for teens</h1>
+<h6>font-size: 20px; Written the 8th of October 2026 by ostande</h6>
+
+<p style="text-align: justify;">
+How to relate to ourselves and to each-other?
+How to recognize our emotions, our needs and desires? And how do we fulfill them with responsibility, respect and care?
+If school doesn’t teach those skills, hanging out with our family and our peers are the first spaces where we can learn, from role models and empirical practice in real life situations. What those spaces offer teens can vary immensely depending on the social context they’re from which makes their learning opportunities far from equal.
+Online content and cultural stories are other platforms where we build knowledge and where we can practice, in real and digital life. Teens from unstable social and emotional environments can empower their ability to learn through those mediums, yet with a high risk of being exposed to poor examples promoting violent behaviors.
+</p>
+
+<h2>Giving teens safe and tangible <span style="color: #0095D6;">S.E.L.</span></h2>
+<p style="text-align: justify;">
+If social and emotional skills are one of the pillars of healthy human development, school should be that place for everyone to learn and discover themselves, and to practice being and doing with others through active social engagement. Today, that place is la cour de récréation. Not facilitated. Taken for granted. Unequal.
+As adults, professionals, and family and community members, we can help younger individuals by improving our own skills and relationships with ourselves, with them and with others, and by becoming healthy living examples of emotional and social behaviors for which they can relate too.
+We can also value digital and cultural content that promotes not only the values of respect and care, but that offer safe and tangible ways to put them into practice.
+</p>
+
+<h2>The next chapter</h2>
+<p style="text-align: justify;">
+I am ostande, a french adolescent educator and facilitator. I am interested in learning more about how teens build their emotional & social skills throughout their secondary and college years, why it is important for them to be supported in their journey and how we can put systems in place to do so collectively.
+Stay tuned! 
+</p>
+
+
+
+    <!-- =========================================
+         PIED DE PAGE
+         ========================================= -->
+
+    <footer>
+        © 2026 ostande.com — Tous droits réservés.
+    </footer>
+
+
+    <!--
+    ==================================================
+    MÉMO — NE S'AFFICHE PAS SUR LA PAGE
+    ==================================================
+
+    GRAS :
+        <strong>Mot en gras</strong>
+
+    COULEUR :
+        <span style="color: #3498db;">mon mot</span>
+
+    COULEUR DU FOND :
+        background-color: #f5f5f5;
+
+    TAILLE DU TEXTE :
+        font-size: 20px;
+
+    EXEMPLE POUR UN TEXTE PARTICULIER :
+        <span style="color: red; font-size: 24px;">
+            Mon texte
+        </span>
+
+    ==================================================
+    -->
+</body>
+</html>
